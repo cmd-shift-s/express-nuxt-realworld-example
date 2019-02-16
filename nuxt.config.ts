@@ -1,6 +1,6 @@
 import { Context } from '@nuxt/vue-app'
 import { Configuration } from 'webpack'
-const pkg = require('./package')
+import * as pkg from './package.json'
 
 module.exports = {
   mode: 'universal',

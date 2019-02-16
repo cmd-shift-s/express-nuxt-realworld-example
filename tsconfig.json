@@ -5,7 +5,9 @@
     "types": [
       "@types/node",
       "@types/jest",
+      "@types/express",
       "@nuxt/vue-app"
-    ]
+    ],
+    "resolveJsonModule": true,
   }
 }
