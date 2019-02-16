@@ -3,10 +3,10 @@
     <div>
       <logo />
       <h1 class="title">
-        express-nuxt-realworld-example
+        {{ name }}
       </h1>
       <h2 class="subtitle">
-        Express and Nuxt.js Realworld Example
+        {{ description }}
       </h2>
       <div class="links">
         <a
@@ -24,13 +24,20 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
+import { Component, Vue } from 'nuxt-property-decorator'
 import Logo from '~/components/Logo.vue'
 
-export default {
+const pkg = require('../package')
+
+@Component({
   components: {
     Logo
   }
+})
+export default class IndexPage extends Vue {
+  name: string = pkg.name
+  description: string = pkg.description
 }
 </script>
 

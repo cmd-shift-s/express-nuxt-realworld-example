@@ -1,0 +1,10 @@
+{
+  "extends": "./node_modules/@nuxt/typescript/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": [
+      "@types/node",
+      "@nuxt/vue-app"
+    ]
+  }
+}

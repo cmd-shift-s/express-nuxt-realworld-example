@@ -1,3 +1,5 @@
+import { Context } from '@nuxt/vue-app'
+import { Configuration } from 'webpack'
 const pkg = require('./package')
 
 module.exports = {
@@ -56,9 +58,10 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-    extend(config, ctx) {
+    extend(config: Configuration, ctx: Context) {
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
+        if (!config.module) config.module = { rules: [] }
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
