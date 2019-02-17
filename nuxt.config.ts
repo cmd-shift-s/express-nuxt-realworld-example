@@ -59,6 +59,8 @@ module.exports = {
   ** Customize Nuxt.js router (vue-router)
   */
   router: {
+    mode: 'hash',
+    base: process.env.ROUTER_BASE,
     linkActiveClass: 'active'
   },
 
