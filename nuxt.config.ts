@@ -2,6 +2,9 @@ import { Context } from '@nuxt/vue-app'
 import { Configuration } from 'webpack'
 import * as pkg from './package.json'
 
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 module.exports = {
   mode: 'universal',
 
