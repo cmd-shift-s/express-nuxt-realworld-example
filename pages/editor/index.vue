@@ -32,7 +32,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class EditorPage extends Vue {
-
+export default class CreatePage extends Vue {
 }
 </script>
