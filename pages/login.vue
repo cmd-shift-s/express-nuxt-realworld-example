@@ -4,20 +4,19 @@
       <div class="row">
         <div class="col-md-6 offset-md-3 col-xs-12">
           <h1 class="text-xs-center">
-            Sign up
+            Sign In
           </h1>
           <p class="text-xs-center">
-            <a href="">Have an account?</a>
+            <n-link to="/register">
+              Need an account?
+            </n-link>
           </p>
 
-          <ul class="error-messages">
+          <ul v-if="hasError" class="error-messages">
             <li>That email is already taken</li>
           </ul>
 
           <form>
-            <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="text" placeholder="Your Name">
-            </fieldset>
             <fieldset class="form-group">
               <input class="form-control form-control-lg" type="text" placeholder="Email">
             </fieldset>
@@ -25,7 +24,7 @@
               <input class="form-control form-control-lg" type="password" placeholder="Password">
             </fieldset>
             <button class="btn btn-lg btn-primary pull-xs-right">
-              Sign up
+              Sign In
             </button>
           </form>
         </div>
@@ -38,7 +37,11 @@
 import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
-export default class AuthPage extends Vue {
+export default class LoginPage extends Vue {
+  errorMessages: string[] = []
 
+  get hasError() {
+    return this.errorMessages && this.errorMessages.length !== 0
+  }
 }
 </script>
