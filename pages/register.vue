@@ -18,7 +18,7 @@
             </li>
           </ul>
 
-          <form @submit.prevent="onSubmit($event)">
+          <form @submit.prevent="regist($event)">
             <fieldset class="form-group">
               <input v-model="username" class="form-control form-control-lg" type="text" name="username" placeholder="Your Name">
             </fieldset>
@@ -82,14 +82,12 @@ export default class RegisterPage extends Vue {
     return !this.hasError
   }
 
-  onSubmit() {
+  regist() {
     if (!this.formValidate()) {
       return false
     }
 
-    this.$router.push({
-      path: 'login'
-    })
+    this.$router.push('login')
 
     return true
   }

@@ -31,11 +31,9 @@
           </template>
           <template v-if="!isAuthenticated">
             <li class="nav-item">
-              <!-- <n-link class="nav-link" to="/login"> -->
-              <a class="nav-link" href="" @click.prevent="login()">
+              <n-link class="nav-link" to="/login">
                 <i class="ion-log-in" />&nbsp;Sign In
-              </a>
-              <!-- </n-link> -->
+              </n-link>
             </li>
             <li class="nav-item">
               <n-link class="nav-link" to="/register">
@@ -61,24 +59,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, State } from 'nuxt-property-decorator'
 
 @Component
 export default class DefaultLayout extends Vue {
-  isAuthenticated: boolean = false
-
-  login() {
-    this.isAuthenticated = true
-    this.goHome()
-  }
+  @State isAuthenticated!: boolean
 
   logout() {
-    this.isAuthenticated = false
-    this.goHome()
-  }
-
-  goHome() {
-    this.$router.push({ name: 'index' })
+    this.$store.commit('authorize', false)
+    this.$router.push('/')
   }
 }
 </script>

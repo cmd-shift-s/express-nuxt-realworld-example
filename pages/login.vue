@@ -13,10 +13,12 @@
           </p>
 
           <ul v-if="hasError" class="error-messages">
-            <li>That email is already taken</li>
+            <li v-for="(message, i) of errorMessages" :key="i">
+              {{ message }}
+            </li>
           </ul>
 
-          <form>
+          <form @submit.prevent="login($event)">
             <fieldset class="form-group">
               <input class="form-control form-control-lg" type="text" placeholder="Email">
             </fieldset>
@@ -42,6 +44,11 @@ export default class LoginPage extends Vue {
 
   get hasError() {
     return this.errorMessages && this.errorMessages.length !== 0
+  }
+
+  login() {
+    this.$store.commit('authorize', true)
+    this.$router.push('/')
   }
 }
 </script>
