@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development concurrently -n TS,Serve \"npm:watch:tsc\" \"npm:watch:serve\"",
     "prebuild": "npm run lint && npm run clean",
-    "build": "npm run build:tsc && npm run build:nuxt",
+    "build": "npm run build:nuxt && npm run build:tsc",
     "build:tsc": "tsc -p tsconfig.server.json",
     "build:nuxt": "nuxt-ts build",
     "watch:tsc": "npm run build:tsc -- --watch --pretty",
