@@ -29,6 +29,13 @@ module.exports = {
   },
 
   /*
+  ** Configure the generation of static web application.
+  */
+  generate: {
+    dir: 'dist/public'
+  },
+
+  /*
   ** Customize the progress-bar color
   */
   loading: { color: '#fff' },

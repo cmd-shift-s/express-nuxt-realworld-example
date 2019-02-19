@@ -4,7 +4,9 @@
     "target": "esnext",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "outDir": "dist",
+    "outDir": "dist/server",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]

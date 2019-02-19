@@ -65,14 +65,9 @@
             <p>Popular Tags</p>
 
             <div class="tag-list">
-              <a href="" class="tag-pill tag-default">programming</a>
-              <a href="" class="tag-pill tag-default">javascript</a>
-              <a href="" class="tag-pill tag-default">emberjs</a>
-              <a href="" class="tag-pill tag-default">angularjs</a>
-              <a href="" class="tag-pill tag-default">react</a>
-              <a href="" class="tag-pill tag-default">mean</a>
-              <a href="" class="tag-pill tag-default">node</a>
-              <a href="" class="tag-pill tag-default">rails</a>
+              <a v-for="tag of tags" :key="tag" href="" class="tag-pill tag-default">
+                {{ tag }}
+              </a>
             </div>
           </div>
         </div>
@@ -84,7 +79,12 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 
-@Component
+@Component({
+  async asyncData({ app }) {
+    const { tags } = await app.$axios.$get('tags')
+    return { tags }
+  }
+})
 export default class IndexPage extends Vue {
 
 }
