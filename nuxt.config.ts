@@ -2,8 +2,10 @@ import { Context } from '@nuxt/vue-app'
 import { Configuration } from 'webpack'
 import * as pkg from './package.json'
 
-import * as dotenv from 'dotenv'
+import dotenv from 'dotenv'
 dotenv.config()
+
+const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
   mode: 'spa',
@@ -56,6 +58,11 @@ module.exports = {
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+    proxy: !isProd,
+  },
+
+  proxy: {
+    '/api': 'http://localhost:3001'
   },
 
   /*
