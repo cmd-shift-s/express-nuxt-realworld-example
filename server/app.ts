@@ -1,5 +1,6 @@
 import 'reflect-metadata'
-import { useExpressServer } from 'routing-controllers'
+import { useExpressServer, useContainer } from 'routing-controllers'
+import { Container } from "typedi"
 import express from 'express'
 import morgan from 'morgan'
 import { NotFoundHandler, ErrorHandler } from './middlewares'
@@ -7,6 +8,8 @@ import { NotFoundHandler, ErrorHandler } from './middlewares'
 require('dotenv').config()
 
 const isProd = process.env.NODE_ENV === 'production'
+
+useContainer(Container)
 
 export const app = express()
 
