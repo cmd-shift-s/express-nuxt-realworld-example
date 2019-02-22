@@ -16,7 +16,7 @@
     "generate": "nuxt-ts generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest",
     "clean": "rimraf dist && rimraf .nuxt"
   },
   "dependencies": {
