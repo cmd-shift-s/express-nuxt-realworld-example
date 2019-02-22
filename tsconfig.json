@@ -10,5 +10,6 @@
       "@nuxtjs/axios"
     ],
     "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
   }
 }
