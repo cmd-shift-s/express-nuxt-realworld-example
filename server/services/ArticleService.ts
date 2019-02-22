@@ -16,7 +16,7 @@ export class ArticleService {
       favorited: faker.random.boolean(),
       favoritesCount: faker.random.number(),
       author: {
-        username: faker.lorem.word(),
+        username: faker.internet.userName(),
         bio: faker.lorem.sentence(),
         image: faker.image.avatar(),
         following: faker.random.boolean()
