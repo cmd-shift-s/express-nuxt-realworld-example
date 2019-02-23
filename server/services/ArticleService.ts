@@ -29,7 +29,7 @@ export class ArticleService {
     return Promise.resolve(Array.from({length: limit}, this.generateArticle));
   }
 
-  async count(): Promise<number> {
-    return Promise.resolve(faker.random.number())
+  async count(limit: number): Promise<number> {
+    return Promise.resolve(limit ? limit : faker.random.number())
   }
 }

@@ -49,7 +49,8 @@ import ArticlePreview from '~/components/ArticlePreview.vue'
 @Component({
   async asyncData({ app }) {
     const { tags } = await app.$axios.$get('tags')
-    const { articles, articleCount } = await app.$axios.$get('articles')
+    const { articles, articleCount } = await app.$axios
+      .$get('articles', { params: { limit: 10 } })
     return {
       tags,
       articles,

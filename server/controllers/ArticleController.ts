@@ -12,11 +12,13 @@ export class ArticleController {
    * Articles
    */
   @Get()
-  public async articles(@QueryParam('limit') limit: number = 20) {
+  public async articles(
+    @QueryParam('limit') limit: number = 20
+  ) {
     this.logger(`articles`)
 
     const articles = await this.ArticleService.list(limit);
-    const articleCount = await this.ArticleService.count()
+    const articleCount = await this.ArticleService.count(limit)
 
     return {
       articles,
