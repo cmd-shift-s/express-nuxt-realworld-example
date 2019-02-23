@@ -8,7 +8,7 @@
         <n-link :to="`/profile/${article.author.username}`" class="author">
           {{ article.author.username }}
         </n-link>
-        <span class="date">{{ createdAt }}</span>
+        <span class="date">{{ article.createdAt | date }}</span>
       </div>
       <button class="btn btn-sm pull-xs-right" :class="favoriteButtonClass">
         <i class="ion-heart" /> {{ article.favoritesCount }}
@@ -39,10 +39,6 @@ export default class ArticlePreview extends Vue {
     return [
       this.article.favorited ? 'btn-primary' : 'btn-outline-primary'
     ]
-  }
-
-  get createdAt() {
-    return this.article.createdAt
   }
 }
 
