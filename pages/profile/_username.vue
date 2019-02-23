@@ -48,7 +48,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class ProfilePage extends Vue {
+export default class ProfileIndexPage extends Vue {
   get username() {
     return this.$route.params.username
   }
