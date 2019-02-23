@@ -1,4 +1,4 @@
-import { JsonController, Get } from 'routing-controllers'
+import { JsonController, Get, QueryParam } from 'routing-controllers'
 import debug from 'debug'
 import { ArticleService } from '../services';
 
@@ -12,14 +12,15 @@ export class ArticleController {
    * Articles
    */
   @Get()
-  public async articles() {
+  public async articles(@QueryParam('limit') limit: number = 20) {
     this.logger(`articles`)
 
-    const articles = await this.ArticleService.list();
+    const articles = await this.ArticleService.list(limit);
+    const articleCount = await this.ArticleService.count()
 
     return {
       articles,
-      articleCount: articles.length
+      articleCount
     }
   }
 }

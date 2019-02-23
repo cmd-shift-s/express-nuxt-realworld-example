@@ -1,7 +1,8 @@
 import faker from 'faker'
+import { Article } from '~/models'
 
 export class ArticleService {
-  generateArticle() {
+  generateArticle(): Article {
     const updatedAt = faker.date.past()
     return {
       slug: faker.lorem.slug(),
@@ -11,8 +12,8 @@ export class ArticleService {
       tagList: Array.from(
           { length: faker.random.number({min: 0, max:10}) },
           () => faker.lorem.word()),
-      createdAt: faker.date.past(undefined, updatedAt),
-      updatedAt: updatedAt,
+      createdAt: faker.date.past(undefined, updatedAt).toISOString(),
+      updatedAt: updatedAt.toISOString(),
       favorited: faker.random.boolean(),
       favoritesCount: faker.random.number(),
       author: {
@@ -24,7 +25,11 @@ export class ArticleService {
     }
   }
 
-  async list() {
-    return Promise.resolve(Array.from({length: faker.random.number({ max: 10})}, this.generateArticle));
+  async list(limit: number): Promise<Article[]> {
+    return Promise.resolve(Array.from({length: limit}, this.generateArticle));
+  }
+
+  async count(): Promise<number> {
+    return Promise.resolve(faker.random.number())
   }
 }
