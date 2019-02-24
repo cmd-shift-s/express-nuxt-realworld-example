@@ -29,6 +29,6 @@ const middlewares = [
 useExpressServer(app, {
   routePrefix: process.env.API_PREFIX,
   defaultErrorHandler: false,
-  controllers: [`${__dirname}/controllers/*.{ts,js}`],
+  controllers: [`${__dirname}/controllers/index.{ts,js}`],
   middlewares
 })
