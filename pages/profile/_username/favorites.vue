@@ -21,6 +21,6 @@ import ArticlePreview from '~/components/ArticlePreview.vue'
     ArticlePreview
   }
 })
-export default class ProfileFavoriesPage extends Vue {
+export default class ProfileArticleFavoriesPage extends Vue {
 }
 </script>
