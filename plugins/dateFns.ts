@@ -3,8 +3,8 @@ import dateFns from 'date-fns'
 
 
 export default () => {
-  Vue.filter('date', (date: string) => {
+  Vue.filter('date', (date: string, format: string = 'MMMM D, YYYY') => {
     if (!date) return ''
-    return dateFns.format(date, 'MMMM D, YYYY')
+    return dateFns.format(date, format)
   })
 }
