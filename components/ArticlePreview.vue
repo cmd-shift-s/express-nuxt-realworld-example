@@ -33,7 +33,7 @@ import { Article } from '~/models'
 
 @Component
 export default class ArticlePreview extends Vue {
-  @Prop() article!: Article
+  @Prop({ required: true }) article!: Article
 
   get favoriteButtonClass() {
     return [
