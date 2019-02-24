@@ -59,7 +59,8 @@ import { Profile } from '~/models'
     return {
       profile
     }
-  }
+  },
+  scrollToTop: true
 })
 export default class ProfilePage extends Vue {
   profile!: Profile
