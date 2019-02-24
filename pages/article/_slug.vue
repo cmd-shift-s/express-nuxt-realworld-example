@@ -76,41 +76,11 @@
             </div>
           </form>
 
-          <div class="card">
-            <div class="card-block">
-              <p class="card-text">
-                With supporting text below as a natural lead-in to additional content.
-              </p>
-            </div>
-            <div class="card-footer">
-              <a href="" class="comment-author">
-                <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img">
-              </a>
-            &nbsp;
-              <a href="" class="comment-author">Jacob Schmidt</a>
-              <span class="date-posted">Dec 29th</span>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-block">
-              <p class="card-text">
-                With supporting text below as a natural lead-in to additional content.
-              </p>
-            </div>
-            <div class="card-footer">
-              <a href="" class="comment-author">
-                <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img">
-              </a>
-            &nbsp;
-              <a href="" class="comment-author">Jacob Schmidt</a>
-              <span class="date-posted">Dec 29th</span>
-              <span class="mod-options">
-                <i class="ion-edit" />
-                <i class="ion-trash-a" />
-              </span>
-            </div>
-          </div>
+          <comment-card
+            v-for="comment of comments"
+            :key="comment.id"
+            :comment="comment"
+          />
         </div>
       </div>
     </div>
@@ -119,9 +89,19 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import CommentCard from '~/components/CommentCard.vue'
+import { Comment } from '~/models'
 
-@Component
+@Component({
+  async asyncData({ app, params }) {
+    const { comments } = await app.$axios.$get(`/articles/${params.slug}/comments`)
+    return { comments }
+  },
+  components: {
+    CommentCard
+  }
+})
 export default class ArticlePage extends Vue {
-
+  comments: Comment[] = []
 }
 </script>
