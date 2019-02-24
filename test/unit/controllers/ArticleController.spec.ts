@@ -1,14 +1,16 @@
 import { ArticleController } from '~/server/controllers'
-import { ArticleService } from '~/server/services'
+import { ArticleService, CommentService } from '~/server/services'
 
 describe('ArticleController', () => {
 
   let ctrl: ArticleController
   let articleService: ArticleService
+  let commentservice: CommentService
 
   beforeEach(() => {
     articleService = new ArticleService()
-    ctrl = new ArticleController(articleService)
+    commentservice = new CommentService()
+    ctrl = new ArticleController(articleService, commentservice)
   })
 
   test('should return articles and articleCount', async () => {
@@ -17,7 +19,6 @@ describe('ArticleController', () => {
     articleService.list = jest.fn().mockImplementation(() => mockArticles)
 
     // When
-    // const ctrl = new TagController(tagService)
     const data = await ctrl.articles()
 
     // Then
@@ -26,5 +27,19 @@ describe('ArticleController', () => {
     expect(data).toHaveProperty('articleCount')
     expect(data.articles).toBe(mockArticles)
     expect(data.articleCount).not.toBeNaN()
+  })
+
+  test('should return comments', async () => {
+    // Given
+    const slug = 'article-slug'
+    const mockComments = Array.from({length: 2}, () => commentservice.generateComment(slug))
+    commentservice.list = jest.fn().mockImplementation(() => mockComments)
+
+    // When
+    const data = await ctrl.comments(slug)
+
+    expect(commentservice.list).toHaveBeenCalledWith(slug)
+    expect(data).toHaveProperty('comments')
+    expect(data.comments).toBe(mockComments)
   })
 })
