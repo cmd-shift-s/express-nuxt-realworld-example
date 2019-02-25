@@ -29,6 +29,17 @@ export class ArticleController {
     }
   }
 
+  @Get('/:slug')
+  public async read(
+    @Param('slug') slug: string
+  ) {
+    this.logger('slug', slug)
+
+    const article = await this.articleService.read(slug)
+
+    return { article }
+  }
+
   @Get('/:slug/comments')
   public async comments(
     @Param('slug') slug: string

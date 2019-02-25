@@ -2,10 +2,10 @@ import faker from 'faker'
 import { Article } from '~/models'
 
 export class ArticleService {
-  generateArticle(): Article {
+  generateArticle(slug: string = faker.lorem.slug()): Article {
     const updatedAt = faker.date.past()
     return {
-      slug: faker.lorem.slug(),
+      slug,
       title: faker.lorem.sentence(),
       description: faker.lorem.paragraph(),
       body: faker.lorem.text(),
@@ -31,5 +31,9 @@ export class ArticleService {
 
   async count(limit: number): Promise<number> {
     return Promise.resolve(limit ? limit : faker.random.number())
+  }
+  
+  async read(slug: string): Promise<Article> {
+    return Promise.resolve(this.generateArticle(slug))
   }
 }

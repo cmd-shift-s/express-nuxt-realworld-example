@@ -5,15 +5,19 @@
         <h1>How to build webapps that scale</h1>
 
         <div class="article-meta">
-          <a href=""><img src="http://i.imgur.com/Qr71crq.jpg"></a>
+          <n-link :to="`/profile/${article.author.username}`">
+            <img :src="article.author.image">
+          </n-link>
           <div class="info">
-            <a href="" class="author">Eric Simons</a>
-            <span class="date">January 20th</span>
+            <n-link :to="`/profile/${article.author.username}`" class="author">
+              {{ article.author.username }}
+            </n-link>
+            <span class="date">{{ article.createdAt | date }}</span>
           </div>
           <button class="btn btn-sm btn-outline-secondary">
             <i class="ion-plus-round" />
             &nbsp;
-            Follow Eric Simons <span class="counter">(10)</span>
+            Follow {{ article.author.username }}<span class="counter">(10)</span>
           </button>
         &nbsp;&nbsp;
           <button class="btn btn-sm btn-outline-primary">
@@ -28,13 +32,7 @@
     <div class="container page">
       <div class="row article-content">
         <div class="col-md-12">
-          <p>
-            Web development technologies have evolved at an incredible clip over the past few years.
-          </p>
-          <h2 id="introducing-ionic">
-            Introducing RealWorld.
-          </h2>
-          <p>It's a great solution for learning how other frameworks work.</p>
+          {{ article.body }}
         </div>
       </div>
 
@@ -42,16 +40,20 @@
 
       <div class="article-actions">
         <div class="article-meta">
-          <a href="profile.html"><img src="http://i.imgur.com/Qr71crq.jpg"></a>
+          <n-link :to="`/profile/${article.author.username}`">
+            <img :src="article.author.image">
+          </n-link>
           <div class="info">
-            <a href="" class="author">Eric Simons</a>
-            <span class="date">January 20th</span>
+            <n-link :to="`/profile/${article.author.username}`" class="author">
+              {{ article.author.username }}
+            </n-link>
+            <span class="date">{{ article.createdAt | date }}</span>
           </div>
 
           <button class="btn btn-sm btn-outline-secondary">
             <i class="ion-plus-round" />
             &nbsp;
-            Follow Eric Simons <span class="counter">(10)</span>
+            Follow {{ article.author.username }}<span class="counter">(10)</span>
           </button>
         &nbsp;
           <button class="btn btn-sm btn-outline-primary">
@@ -90,18 +92,26 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import CommentCard from '~/components/CommentCard.vue'
-import { Comment } from '~/models'
+import { Article, Comment } from '~/models'
 
 @Component({
   async asyncData({ app, params }) {
-    const { comments } = await app.$axios.$get(`/articles/${params.slug}/comments`)
-    return { comments }
+    const [{ article }, { comments }] = await Promise.all([
+      app.$axios.$get(`/articles/${params.slug}`),
+      app.$axios.$get(`/articles/${params.slug}/comments`)
+    ])
+
+    return {
+      article,
+      comments
+    }
   },
   components: {
     CommentCard
   }
 })
 export default class ArticlePage extends Vue {
-  comments: Comment[] = []
+  comments!: Comment[]
+  article!: Article
 }
 </script>

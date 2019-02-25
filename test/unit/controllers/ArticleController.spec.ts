@@ -38,8 +38,25 @@ describe('ArticleController', () => {
     // When
     const data = await ctrl.comments(slug)
 
+    // Then
     expect(commentservice.list).toHaveBeenCalledWith(slug)
     expect(data).toHaveProperty('comments')
     expect(data.comments).toBe(mockComments)
+  })
+
+  test('should return article', async () => {
+    // Given
+    const slug = 'article-slug'
+    const mockArticle = articleService.generateArticle(slug)
+    articleService.read = jest.fn().mockImplementation(() => mockArticle)
+
+    // When
+    const data = await ctrl.read(slug)
+
+    // Then
+    expect(articleService.read).toHaveBeenCalledWith(slug)
+    expect(data).toHaveProperty('article')
+    expect(data.article).toHaveProperty('slug')
+    expect(data.article.slug).toBe(slug)
   })
 })

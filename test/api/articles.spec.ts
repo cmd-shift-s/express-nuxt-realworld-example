@@ -45,4 +45,18 @@ describe('API - articles', () => {
     expect(res.body.comments).toBeInstanceOf(Array)
   })
 
+  test('should return article with slug', async () => {
+    // Given
+    const slug = 'article-slug'
+
+    // When
+    const res = await req.get(`/api/articles/${slug}`)
+      .expect(200)
+
+    // Then
+    expect(res.body).toHaveProperty('article')
+    expect(res.body.article).toHaveProperty('slug')
+    expect(res.body.article.slug).toBe(slug)
+  })
+
 })
