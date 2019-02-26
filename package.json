@@ -25,10 +25,14 @@
     "@nuxtjs/axios": "^5.3.6",
     "cross-env": "^5.2.0",
     "date-fns": "^1.30.1",
+    "dotenv": "^6.2.0",
     "express": "^4.16.4",
+    "faker": "^4.1.0",
     "morgan": "^1.9.1",
     "nuxt": "^2.4.0",
-    "routing-controllers": "^0.7.7"
+    "reflect-metadata": "^0.1.13",
+    "routing-controllers": "^0.7.7",
+    "typedi": "^0.8.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^0.0.1",
@@ -45,7 +49,6 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "concurrently": "^4.1.0",
-    "dotenv": "^6.2.0",
     "eslint": "^5.0.1",
     "eslint-config-standard": ">=12.0.0",
     "eslint-loader": "^2.0.0",
@@ -55,7 +58,6 @@
     "eslint-plugin-promise": ">=4.0.1",
     "eslint-plugin-standard": ">=4.0.0",
     "eslint-plugin-vue": "^5.0.0",
-    "faker": "^4.1.0",
     "jest": "^23.6.0",
     "nodemon": "^1.18.9",
     "nuxt-property-decorator": "^2.0.1",
@@ -65,7 +67,6 @@
     "ts-jest": "^23.10.5",
     "tslint": "^5.13.0",
     "tslint-config-standard": "^8.0.1",
-    "typedi": "^0.8.0",
     "typescript": "^3.3.3",
     "vue-jest": "^3.0.2"
   }
