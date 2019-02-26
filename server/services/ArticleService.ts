@@ -10,7 +10,7 @@ export class ArticleService {
       description: faker.lorem.paragraph(),
       body: faker.lorem.text(),
       tagList: Array.from(
-          { length: faker.random.number({min: 0, max:10}) },
+          { length: faker.random.number({ min: 0, max: 10 }) },
           () => faker.lorem.word()),
       createdAt: faker.date.past(undefined, updatedAt).toISOString(),
       updatedAt: updatedAt.toISOString(),
@@ -26,13 +26,13 @@ export class ArticleService {
   }
 
   async list(limit: number): Promise<Article[]> {
-    return Promise.resolve(Array.from({length: limit}, this.generateArticle));
+    return Promise.resolve(Array.from({ length: limit }, this.generateArticle))
   }
 
   async count(limit: number): Promise<number> {
     return Promise.resolve(limit ? limit : faker.random.number())
   }
-  
+
   async read(slug: string): Promise<Article> {
     return Promise.resolve(this.generateArticle(slug))
   }

@@ -7,7 +7,7 @@ describe('API - profile', () => {
   test('should return profile', async () => {
     // Given
     const username = 'Eric Simons'
-    
+
     // When
     const res = await req.get('/api/profile/' + username)
       .query({ username })

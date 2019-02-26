@@ -41,7 +41,6 @@ export default class ArticlePreview extends Vue {
     ]
   }
 }
-
 </script>
 
 <style lang="css" scoped>

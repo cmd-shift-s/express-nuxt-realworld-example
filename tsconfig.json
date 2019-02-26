@@ -9,7 +9,6 @@
       "@nuxt/vue-app",
       "@nuxtjs/axios"
     ],
-    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
   }
 }

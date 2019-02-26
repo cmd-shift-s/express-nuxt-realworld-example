@@ -1,6 +1,6 @@
 import { JsonController, Get, Param } from 'routing-controllers'
 import debug from 'debug'
-import { ProfileService } from '../services';
+import { ProfileService } from '../services'
 
 @JsonController('/profile')
 export class ProfileController {

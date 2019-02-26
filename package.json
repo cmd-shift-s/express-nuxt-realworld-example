@@ -14,7 +14,9 @@
     "watch:serve": "nodemon --watch dist dist/server",
     "start": "cross-env NODE_ENV=production node dist/server/index.js",
     "generate": "nuxt-ts generate",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "lint": "npm run lint:es && npm run lint:ts",
+    "lint:es": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "lint:ts": "tslint -p tsconfig.json",
     "precommit": "npm run lint",
     "test": "cross-env NODE_ENV=test jest",
     "clean": "rimraf dist && rimraf .nuxt"
@@ -61,6 +63,8 @@
     "rimraf": "^2.6.3",
     "supertest": "^3.4.2",
     "ts-jest": "^23.10.5",
+    "tslint": "^5.13.0",
+    "tslint-config-standard": "^8.0.1",
     "typedi": "^0.8.0",
     "typescript": "^3.3.3",
     "vue-jest": "^3.0.2"

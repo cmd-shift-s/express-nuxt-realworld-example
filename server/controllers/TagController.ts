@@ -1,6 +1,6 @@
 import { JsonController, Get } from 'routing-controllers'
 import debug from 'debug'
-import { TagService } from '../services';
+import { TagService } from '../services'
 
 @JsonController('/tags')
 export class TagController {
@@ -15,7 +15,7 @@ export class TagController {
   public async tags() {
     this.logger(`tags`)
 
-    const tags = await this.tagService.list();
+    const tags = await this.tagService.list()
 
     return { tags }
   }

@@ -21,7 +21,7 @@ export class CommentService {
   async list(slug: string): Promise<Comment[]> {
     return Promise.resolve(
       Array.from(
-        {length: faker.random.number({max: 30})},
-        () => this.generateComment(slug)));
+        { length: faker.random.number({ max: 30 }) },
+        () => this.generateComment(slug)))
   }
 }

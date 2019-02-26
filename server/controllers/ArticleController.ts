@@ -1,6 +1,6 @@
 import { JsonController, Get, QueryParam, Param } from 'routing-controllers'
 import debug from 'debug'
-import { ArticleService, CommentService } from '../services';
+import { ArticleService, CommentService } from '../services'
 
 @JsonController('/articles')
 export class ArticleController {

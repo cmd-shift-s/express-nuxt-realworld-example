@@ -15,7 +15,7 @@ describe('ArticleController', () => {
 
   test('should return articles and articleCount', async () => {
     // Given
-    const mockArticles = Array.from({length: 2}, () => articleService.generateArticle())
+    const mockArticles = Array.from({ length: 2 }, () => articleService.generateArticle())
     articleService.list = jest.fn().mockImplementation(() => mockArticles)
 
     // When
@@ -32,7 +32,7 @@ describe('ArticleController', () => {
   test('should return comments', async () => {
     // Given
     const slug = 'article-slug'
-    const mockComments = Array.from({length: 2}, () => commentservice.generateComment(slug))
+    const mockComments = Array.from({ length: 2 }, () => commentservice.generateComment(slug))
     commentservice.list = jest.fn().mockImplementation(() => mockComments)
 
     // When

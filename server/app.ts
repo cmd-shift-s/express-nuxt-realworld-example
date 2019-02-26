@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { useExpressServer, useContainer } from 'routing-controllers'
-import { Container } from "typedi"
+import { Container } from 'typedi'
 import express from 'express'
 import morgan from 'morgan'
 import { NotFoundHandler, ErrorHandler } from './middlewares'
@@ -19,7 +19,7 @@ if (isDev || isProd) {
 }
 
 if (isProd) {
-  app.use(express.static(__dirname + '/../public'));
+  app.use(express.static(__dirname + '/../public'))
 }
 
 const middlewares = [

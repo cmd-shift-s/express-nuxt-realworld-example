@@ -14,11 +14,9 @@ describe('TagController', () => {
   test('should return tags', async () => {
     // Given
     const mockTags = ['tag1', 'tag2']
-    // const tagService = new TagService()
     tagService.list = jest.fn().mockImplementation(() => mockTags)
 
     // When
-    // const ctrl = new TagController(tagService)
     const data = await ctrl.tags()
 
     // Then
@@ -30,11 +28,9 @@ describe('TagController', () => {
   test('should return tags2', async () => {
     // Given
     const mockTags = ['tag3', 'tag4']
-    // const tagService = new TagService()
     tagService.list = jest.fn().mockImplementation(() => mockTags)
 
     // When
-    // const ctrl = new TagController(tagService)
     const data = await ctrl.tags()
 
     // Then
