@@ -69,7 +69,7 @@ module.exports = {
   },
 
   proxy: {
-    '/api': 'http://localhost:3001'
+    [process.env.API_PREFIX as any]: 'http://localhost:' + process.env.API_PORT
   },
 
   /*

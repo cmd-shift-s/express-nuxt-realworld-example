@@ -1,6 +1,6 @@
 import { app } from './app'
 
-const port = process.env.PORT || 3000
+const port = process.env.API_PORT || 3000
 
 const runServer = async () => {
   app.listen(port, () => {
