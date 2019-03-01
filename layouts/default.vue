@@ -59,14 +59,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, State } from 'nuxt-property-decorator'
+import { Component, Vue, Getter } from 'nuxt-property-decorator'
 
 @Component
 export default class DefaultLayout extends Vue {
-  @State isAuthenticated!: boolean
+  @Getter isAuthenticated!: boolean
 
   logout() {
-    this.$store.commit('authorize', false)
+    this.$store.commit('authorize', null)
     this.$router.push('/')
   }
 }

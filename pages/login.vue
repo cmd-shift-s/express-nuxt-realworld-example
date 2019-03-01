@@ -20,10 +20,10 @@
 
           <form @submit.prevent="login($event)">
             <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="text" placeholder="Email">
+              <input v-model="email" class="form-control form-control-lg" type="text" placeholder="Email">
             </fieldset>
             <fieldset class="form-group">
-              <input class="form-control form-control-lg" type="password" placeholder="Password">
+              <input v-model="password" class="form-control form-control-lg" type="password" placeholder="Password">
             </fieldset>
             <button class="btn btn-lg btn-primary pull-xs-right">
               Sign In
@@ -37,17 +37,26 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
+import { User } from '~/models'
 
 @Component
 export default class LoginPage extends Vue {
+  email: string = ''
+  password: string = ''
   errorMessages: string[] = []
 
   get hasError() {
     return this.errorMessages && this.errorMessages.length !== 0
   }
 
-  login() {
-    this.$store.commit('authorize', true)
+  async login() {
+    const loginInfo = {
+      email: this.email,
+      password: this.password
+    }
+
+    const { user } = await this.$axios.$post<{user: User}>('/users/login', { user: loginInfo })
+    this.$store.commit('authorize', user)
     this.$router.push('/')
   }
 }

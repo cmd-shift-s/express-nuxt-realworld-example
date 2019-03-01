@@ -1,15 +1,22 @@
-import { MutationTree } from 'vuex'
+import { MutationTree, GetterTree } from 'vuex'
+import { User } from '~/models'
 
 export interface RootState {
-  isAuthenticated: boolean
+  user: User | null
 }
 
 export const state = (): RootState => ({
-  isAuthenticated: false
+  user: null
 })
 
 export const mutations: MutationTree<RootState> = {
-  authorize(state, isAuthenticated: boolean) {
-    state.isAuthenticated = isAuthenticated
+  authorize(state, user: User) {
+    state.user = user
+  }
+}
+
+export const getters: GetterTree<RootState, RootState> = {
+  isAuthenticated(state) {
+    return !!state.user
   }
 }

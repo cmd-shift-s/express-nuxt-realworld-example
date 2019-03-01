@@ -43,14 +43,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, State } from 'nuxt-property-decorator'
+import { Component, Vue, Getter } from 'nuxt-property-decorator'
 import ArticlePreview from '~/components/ArticlePreview.vue'
 
 @Component({
   async asyncData({ app }) {
-    const { tags } = await app.$axios.$get('tags')
-    const { articles, articleCount } = await app.$axios
-      .$get('articles', { params: { limit: 10 } })
+    const [{ tags }, { articles, articleCount }] = await Promise.all([
+      app.$axios.$get('tags'),
+      app.$axios.$get('articles', { params: { limit: 10 } })
+    ])
+
     return {
       tags,
       articles,
@@ -62,7 +64,7 @@ import ArticlePreview from '~/components/ArticlePreview.vue'
   }
 })
 export default class IndexPage extends Vue {
-  @State isAuthenticated!: boolean
+  @Getter isAuthenticated!: boolean
 }
 </script>
 
