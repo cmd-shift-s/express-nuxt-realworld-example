@@ -78,7 +78,10 @@ module.exports = {
   router: {
     mode: 'hash',
     base: process.env.ROUTER_BASE,
-    linkActiveClass: 'active'
+    linkActiveClass: 'active',
+    middleware: [
+      'clearError'
+    ]
   },
 
   /*
