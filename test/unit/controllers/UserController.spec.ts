@@ -30,14 +30,14 @@ describe('UserController', () => {
     expect(data.user.email).toBe(email)
   })
 
-  test('should throw UnprocessableEntityError #1 not found email', () => {
+  test('should throw UnprocessableEntityError #1 not found email', async () => {
     // Given
     const email = 'test@email.com'
     const mockUser = userService.generateUser(email)
     userService.find = jest.fn().mockImplementation(() => mockUser)
 
     // When
-    expect(ctrl.login({
+    await expect(ctrl.login({
       email, password: 'invalid password'
     })).rejects.toThrowError(new UnprocessableEntityError('email or password is invalid'))
 
@@ -45,14 +45,14 @@ describe('UserController', () => {
     expect(userService.find).toHaveBeenCalledWith(email)
   })
 
-  test('should throw UnprocessableEntityError #2 invalid passwod', () => {
+  test('should throw UnprocessableEntityError #2 invalid passwod', async () => {
     // Given
     const email = 'test@email.com'
     const mockUser = userService.generateUser(email)
     userService.find = jest.fn().mockImplementation(() => mockUser)
 
     // When
-    expect(ctrl.login({
+    await expect(ctrl.login({
       email, password: 'invalid password'
     })).rejects.toThrowError(new UnprocessableEntityError('email or password is invalid'))
 
