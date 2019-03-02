@@ -39,51 +39,45 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, State, Getter } from 'nuxt-property-decorator'
 
 @Component
 export default class RegisterPage extends Vue {
   username: string = ''
   email: string = ''
   password: string = ''
-  errorMessages: string[] = []
 
-  get hasError() {
-    return this.errorMessages && this.errorMessages.length !== 0
-  }
-
-  addError(msg: string) {
-    this.errorMessages.push(msg)
-  }
-
-  clearError() {
-    this.errorMessages = []
-  }
+  @State errorMessages!: string[]
+  @Getter hasError!: boolean
 
   formValidate() {
-    this.clearError()
+    this.$store.commit('clearError')
+
+    const errors: string[] = []
 
     if (!this.username) {
-      this.addError('Name is required')
+      errors.push('Name is required')
     } else if (this.username === 'Eric') {
-      this.addError('That username is already used')
+      errors.push('That username is already used')
     }
 
     if (!this.email) {
-      this.addError('Email is required')
+      errors.push('Email is required')
     } else if (this.email === 'email@test.com') {
-      this.addError('That email is already taken')
+      errors.push('That email is already taken')
     }
 
     if (!this.password) {
-      this.addError('password is required')
+      errors.push('password is required')
     }
 
-    return !this.hasError
+    this.$store.commit('pushError', { errors: { body: errors } })
+
+    return errors.length
   }
 
   regist() {
-    if (!this.formValidate()) {
+    if (this.formValidate()) {
       return false
     }
 

@@ -36,28 +36,37 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, State, Getter } from 'nuxt-property-decorator'
 import { User } from '~/models'
 
 @Component
 export default class LoginPage extends Vue {
+  @State errorMessages!: string[]
+  @Getter hasError!: boolean
+
   email: string = ''
   password: string = ''
-  errorMessages: string[] = []
 
-  get hasError() {
-    return this.errorMessages && this.errorMessages.length !== 0
-  }
+  login() {
+    this.$store.commit('clearError')
 
-  async login() {
     const loginInfo = {
       email: this.email,
       password: this.password
     }
 
-    const { user } = await this.$axios.$post<{user: User}>('/users/login', { user: loginInfo })
-    this.$store.commit('authorize', user)
-    this.$router.push('/')
+    return this.$axios.$post<{user: User}>('/users/login', { user: loginInfo })
+      .then((res) => {
+        if (!res.user) {
+          return
+        }
+
+        this.$store.commit('authorize', res.user)
+        this.$router.push('/')
+      })
+      .catch((error) => {
+        this.$store.commit('pushError', error.response.data)
+      })
   }
 }
 </script>
