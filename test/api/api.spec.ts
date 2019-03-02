@@ -7,6 +7,6 @@ describe('API', () => {
 
   test('not found exception', () => {
     return req.get('/api/not_found')
-      .expect(404, JSON.stringify(new NotFoundError()))
+      .expect(404, { errors: { body: [NotFoundError.name] } })
   })
 })
