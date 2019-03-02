@@ -1,4 +1,5 @@
 import { JsonController, Post, BodyParam } from 'routing-controllers'
+import { UnprocessableEntityError } from '../common/errors'
 import debug from 'debug'
 import { UserService } from '../services'
 
@@ -24,8 +25,8 @@ export class UserController {
 
     const user = await this.userService.find(loginInfo.email)
 
-    if (user.password !== loginInfo.password) {
-      // throw error
+    if (!user || user.password !== loginInfo.password) {
+      throw new UnprocessableEntityError('email or password is invalid')
     }
 
     const loginUser = {

@@ -1,5 +1,6 @@
 import { UserController } from '~/server/controllers'
 import { UserService } from '~/server/services'
+import { UnprocessableEntityError } from '~/server/common/errors'
 
 describe('UserController', () => {
 
@@ -19,7 +20,7 @@ describe('UserController', () => {
 
     // When
     const data = await ctrl.login({
-      email, password: 'asdf'
+      email, password: 'Secret!'
     })
 
     // Then
@@ -27,5 +28,35 @@ describe('UserController', () => {
     expect(data).toHaveProperty('user')
     expect(data.user).toHaveProperty('email')
     expect(data.user.email).toBe(email)
+  })
+
+  test('should throw UnprocessableEntityError #1 not found email', () => {
+    // Given
+    const email = 'test@email.com'
+    const mockUser = userService.generateUser(email)
+    userService.find = jest.fn().mockImplementation(() => mockUser)
+
+    // When
+    expect(ctrl.login({
+      email, password: 'invalid password'
+    })).rejects.toThrowError(new UnprocessableEntityError('email or password is invalid'))
+
+    // Then
+    expect(userService.find).toHaveBeenCalledWith(email)
+  })
+
+  test('should throw UnprocessableEntityError #2 invalid passwod', () => {
+    // Given
+    const email = 'test@email.com'
+    const mockUser = userService.generateUser(email)
+    userService.find = jest.fn().mockImplementation(() => mockUser)
+
+    // When
+    expect(ctrl.login({
+      email, password: 'invalid password'
+    })).rejects.toThrowError(new UnprocessableEntityError('email or password is invalid'))
+
+    // Then
+    expect(userService.find).toHaveBeenCalledWith(email)
   })
 })
