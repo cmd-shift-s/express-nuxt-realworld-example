@@ -4,4 +4,5 @@ export interface User {
   bio: string
   image: string
   password: string
+  roles: string[]
 }
