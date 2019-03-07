@@ -9,5 +9,6 @@ declare namespace NodeJS {
     API_PORT: string
     ROUTER_BASE: string
     API_PREFIX: string
+    JWT_SECRET: string
   }
 }
