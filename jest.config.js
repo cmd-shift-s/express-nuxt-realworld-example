@@ -4,6 +4,10 @@ module.exports = {
     '^~/(.*)$': '<rootDir>/$1',
     '^vue$': 'vue/dist/vue.common.js'
   },
+  setupFiles: [
+    '<rootDir>/node_modules/reflect-metadata',
+    '<rootDir>/test/unit/setup.ts'
+  ],
   moduleFileExtensions: ['ts', 'js', 'vue', 'json'],
   testRegex: '(test|spec)\\.tsx?$',
   transform: {
