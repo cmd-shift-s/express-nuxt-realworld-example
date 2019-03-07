@@ -1,6 +1,6 @@
 # express-nuxt-realworld-example
 
-> Express and Nuxt.js Realworld Example
+> Express and Nuxt.js for TypeScript Realworld Example
 
 ## Build Setup
 
@@ -8,7 +8,12 @@
 # install dependencies
 $ npm install
 
+# copy environments
+$ cp .env.sample .env
+
 # serve with hot reload at localhost:3000
+$ npx nuxt-ts
+# run api server
 $ npm run dev
 
 # build for production and launch server
