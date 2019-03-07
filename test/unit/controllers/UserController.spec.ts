@@ -12,7 +12,7 @@ describe('UserController', () => {
     ctrl = new UserController(userService)
   })
 
-  test('should return user', async () => {
+  test('#login - return user', async () => {
     // Given
     const email = 'test@email.com'
     const mockUser = userService.generateUser(email)
@@ -28,9 +28,10 @@ describe('UserController', () => {
     expect(data).toHaveProperty('user')
     expect(data.user).toHaveProperty('email')
     expect(data.user.email).toBe(email)
+    expect(data.user.token).not.toBeNull()
   })
 
-  test('should throw UnprocessableEntityError #1 not found email', async () => {
+  test('#login - throw UnprocessableEntityError #1 invalid password', async () => {
     // Given
     const email = 'test@email.com'
     const mockUser = userService.generateUser(email)
@@ -45,9 +46,9 @@ describe('UserController', () => {
     expect(userService.find).toHaveBeenCalledWith(email)
   })
 
-  test('should throw UnprocessableEntityError #2 invalid passwod', async () => {
+  test.skip('#login - throw UnprocessableEntityError #2 not found user', async () => {
     // Given
-    const email = 'test@email.com'
+    const email = 'not_found@email.com'
     const mockUser = userService.generateUser(email)
     userService.find = jest.fn().mockImplementation(() => mockUser)
 
@@ -58,5 +59,20 @@ describe('UserController', () => {
 
     // Then
     expect(userService.find).toHaveBeenCalledWith(email)
+  })
+
+  test('#me - return user', async () => {
+    // Given
+    const email = 'test@email.com'
+    const mockUser = userService.generateUser(email)
+    // TODO: userService.find = jest.fn().mockImplementation(() => mockUser)
+
+    // When
+    const data = await ctrl.me(mockUser)
+
+    // Then
+    // TODO: expect(userService.find).toHaveBeenCalledWith(email)
+    expect(data).toHaveProperty('user')
+    expect(data.user).toEqual(mockUser)
   })
 })
