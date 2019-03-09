@@ -66,17 +66,27 @@
 
       <div class="row">
         <div class="col-xs-12 col-md-8 offset-md-2">
-          <form class="card comment-form">
+          <form v-if="loggedIn" class="card comment-form">
             <div class="card-block">
               <textarea class="form-control" placeholder="Write a comment..." rows="3" />
             </div>
             <div class="card-footer">
-              <img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img">
+              <img :src="user.image" class="comment-author-img">
               <button class="btn btn-sm btn-primary">
                 Post Comment
               </button>
             </div>
           </form>
+
+          <p v-else>
+            <n-link to="/login">
+              Sign in
+            </n-link>
+            or
+            <n-link to="/register">
+              sign up
+            </n-link> to add comments on this article.
+          </p>
 
           <comment-card
             v-for="comment of comments"
@@ -90,9 +100,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import CommentCard from '~/components/CommentCard.vue'
-import { Article, Comment } from '~/models'
+import { Article, Comment, User } from '~/models'
+
+const auth = namespace('auth')
 
 @Component({
   async asyncData({ app, params }) {
@@ -113,5 +125,8 @@ import { Article, Comment } from '~/models'
 export default class ArticlePage extends Vue {
   comments!: Comment[]
   article!: Article
+
+  @auth.State loggedIn!: boolean
+  @auth.State user!: User
 }
 </script>
