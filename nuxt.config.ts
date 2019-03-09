@@ -58,7 +58,8 @@ module.exports = {
   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth'
   ],
   /*
   ** Axios module configuration
@@ -70,6 +71,21 @@ module.exports = {
 
   proxy: {
     [process.env.API_PREFIX as any]: 'http://localhost:' + process.env.API_PORT
+  },
+
+  /*
+  ** Auth module configuration
+  */
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: 'users/login', method: 'post', propertyName: 'user.token' },
+          user: { url: 'user', method: 'get', propertyName: 'user' },
+          logout: false
+        }
+      }
+    }
   },
 
   /*
