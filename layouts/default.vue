@@ -12,7 +12,7 @@
               Home
             </n-link>
           </li>
-          <template v-if="isAuthenticated">
+          <template v-if="loggedIn">
             <li class="nav-item">
               <n-link class="nav-link" to="/editor">
                 <i class="ion-compose" />&nbsp;New Post
@@ -29,7 +29,7 @@
               </a>
             </li>
           </template>
-          <template v-if="!isAuthenticated">
+          <template v-if="!loggedIn">
             <li class="nav-item">
               <n-link class="nav-link" to="/login">
                 <i class="ion-log-in" />&nbsp;Sign In
@@ -59,14 +59,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Getter } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+
+const auth = namespace('auth')
 
 @Component
 export default class DefaultLayout extends Vue {
-  @Getter isAuthenticated!: boolean
+  @auth.State loggedIn!: boolean
 
-  logout() {
-    this.$store.commit('authorize', null)
+  async logout() {
+    await this.$auth.logout()
     this.$router.push('/')
   }
 }

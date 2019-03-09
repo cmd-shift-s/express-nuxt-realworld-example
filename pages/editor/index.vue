@@ -31,7 +31,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-@Component
+@Component({
+  middleware: 'auth'
+})
 export default class CreatePage extends Vue {
 }
 </script>

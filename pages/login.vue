@@ -37,7 +37,6 @@
 
 <script lang="ts">
 import { Component, Vue, State, Getter } from 'nuxt-property-decorator'
-import { User } from '~/models'
 
 @Component
 export default class LoginPage extends Vue {
@@ -47,7 +46,7 @@ export default class LoginPage extends Vue {
   email: string = ''
   password: string = ''
 
-  login() {
+  async login() {
     this.$store.commit('clearError')
 
     const loginInfo = {
@@ -55,18 +54,8 @@ export default class LoginPage extends Vue {
       password: this.password
     }
 
-    return this.$axios.$post<{user: User}>('/users/login', { user: loginInfo })
-      .then((res) => {
-        if (!res.user) {
-          return
-        }
-
-        this.$store.commit('authorize', res.user)
-        this.$router.push('/')
-      })
-      .catch((error) => {
-        this.$store.commit('pushError', error.response.data)
-      })
+    await this.$auth.login({ data: { user: loginInfo } })
+    this.$router.push('/')
   }
 }
 </script>

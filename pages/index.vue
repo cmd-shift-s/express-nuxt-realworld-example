@@ -15,7 +15,7 @@
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a v-if="isAuthenticated" class="nav-link disabled" href="">Your Feed</a>
+                <a v-if="loggedIn" class="nav-link disabled" href="">Your Feed</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link active" href="">Global Feed</a>
@@ -43,8 +43,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Getter } from 'nuxt-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ArticlePreview from '~/components/ArticlePreview.vue'
+
+const auth = namespace('auth')
 
 @Component({
   async asyncData({ app }) {
@@ -64,7 +66,7 @@ import ArticlePreview from '~/components/ArticlePreview.vue'
   }
 })
 export default class IndexPage extends Vue {
-  @Getter isAuthenticated!: boolean
+  @auth.State loggedIn!: boolean
 }
 </script>
 
