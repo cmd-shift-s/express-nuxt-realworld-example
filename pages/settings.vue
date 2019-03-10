@@ -6,23 +6,22 @@
           <h1 class="text-xs-center">
             Your Settings
           </h1>
-
-          <form>
+          <form @submit.prevent="onSubmit($event)">
             <fieldset>
               <fieldset class="form-group">
-                <input class="form-control" type="text" placeholder="URL of profile picture">
+                <input :value="user.image" name="image" class="form-control" type="text" placeholder="URL of profile picture">
               </fieldset>
               <fieldset class="form-group">
-                <input class="form-control form-control-lg" type="text" placeholder="Your Name">
+                <input :value="user.username" name="username" class="form-control form-control-lg" type="text" placeholder="Your Name">
               </fieldset>
               <fieldset class="form-group">
-                <textarea class="form-control form-control-lg" rows="8" placeholder="Short bio about you" />
+                <textarea :value="user.bio" name="bio" class="form-control form-control-lg" rows="8" placeholder="Short bio about you" />
               </fieldset>
               <fieldset class="form-group">
-                <input class="form-control form-control-lg" type="text" placeholder="Email">
+                <input :value="user.email" name="email" class="form-control form-control-lg" type="text" placeholder="Email">
               </fieldset>
               <fieldset class="form-group">
-                <input class="form-control form-control-lg" type="password" placeholder="Password">
+                <input name="password" class="form-control form-control-lg" type="password" placeholder="Password">
               </fieldset>
               <button class="btn btn-lg btn-primary pull-xs-right">
                 Update Settings
@@ -40,10 +39,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { User } from '~/models'
 
-@Component
+const auth = namespace('auth')
+
+@Component({
+  middleware: 'auth'
+})
 export default class SettingsPage extends Vue {
+  @auth.State user!: User
+
+  // onSubmit({ target }: { target: HTMLFormElement }) {
+  onSubmit() {
+    this.$router.push('/')
+  }
+
   async logout() {
     await this.$auth.logout()
     this.$router.push('/')
