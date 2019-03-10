@@ -50,8 +50,18 @@ const auth = namespace('auth')
 export default class SettingsPage extends Vue {
   @auth.State user!: User
 
-  // onSubmit({ target }: { target: HTMLFormElement }) {
-  onSubmit() {
+  async onSubmit({ target }: { target: HTMLFormElement }) {
+    function getFieldsValue(target: HTMLFormElement, ...fields: string[]) {
+      return fields.reduce((obj: any, field) => {
+        obj[field] = target[field].value
+        return obj
+      }, {})
+    }
+
+    const user = getFieldsValue(target, 'email', 'username', 'password', 'image', 'bio')
+    const res = await this.$axios.$put('/user', { user })
+    this.$auth.setToken('local', res.user.token)
+    await this.$auth.fetchUser()
     this.$router.push('/')
   }
 
