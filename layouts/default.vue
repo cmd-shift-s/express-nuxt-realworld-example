@@ -24,9 +24,9 @@
               </n-link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="" @click.prevent="logout()">
-                <i class="ion-log-out" />&nbsp;Logout
-              </a>
+              <n-link class="nav-link" :to="`/profile/${user.username}`">
+                {{ user.username }}
+              </n-link>
             </li>
           </template>
           <template v-if="!loggedIn">
@@ -60,17 +60,14 @@
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { User } from '~/models'
 
 const auth = namespace('auth')
 
 @Component
 export default class DefaultLayout extends Vue {
   @auth.State loggedIn!: boolean
-
-  async logout() {
-    await this.$auth.logout()
-    this.$router.push('/')
-  }
+  @auth.State user!: User
 }
 </script>
 

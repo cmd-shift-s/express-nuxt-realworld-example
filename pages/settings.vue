@@ -29,6 +29,10 @@
               </button>
             </fieldset>
           </form>
+          <hr>
+          <button class="btn btn-outline-danger" @click="logout()">
+            Or click here to logout.
+          </button>
         </div>
       </div>
     </div>
@@ -40,6 +44,9 @@ import { Component, Vue } from 'vue-property-decorator'
 
 @Component
 export default class SettingsPage extends Vue {
-
+  async logout() {
+    await this.$auth.logout()
+    this.$router.push('/')
+  }
 }
 </script>
