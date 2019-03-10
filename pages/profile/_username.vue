@@ -9,7 +9,12 @@
             <p>
               {{ profile.bio }}
             </p>
-            <button v-if="profile.following" class="btn btn-sm action-btn btn-secondary">
+            <n-link v-if="loggedIn && profile.username === user.username" to="/settings" tag="button" class="btn btn-sm action-btn btn-outline-secondary">
+              <i class="ion-gear-a" />
+              &nbsp;
+              Edit Profile Settings
+            </n-link>
+            <button v-else-if="profile.following" class="btn btn-sm action-btn btn-outline-secondary">
               <i class="ion-minus-round" />
               &nbsp;
               Unfollow {{ profile.username }}
@@ -50,8 +55,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import { Profile } from '~/models'
+import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Profile, User } from '~/models'
+
+const auth = namespace('auth')
 
 @Component({
   async asyncData({ app, params }) {
@@ -63,6 +70,9 @@ import { Profile } from '~/models'
   scrollToTop: true
 })
 export default class ProfilePage extends Vue {
+  @auth.State loggedIn!: boolean
+  @auth.State user!: User
+
   profile!: Profile
 }
 </script>
