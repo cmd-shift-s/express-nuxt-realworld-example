@@ -17,7 +17,7 @@ export class UserService {
     return Promise.resolve(this.generateUser(email))
   }
 
-  // update(_user: User): Promise<boolean> {
-  //   return Promise.resolve(true)
-  // }
+  update(_user: User): Promise<boolean> {
+    return Promise.resolve(true)
+  }
 }

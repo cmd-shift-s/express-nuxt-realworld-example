@@ -75,4 +75,21 @@ describe('UserController', () => {
     expect(data).toHaveProperty('user')
     expect(data.user).toEqual(mockUser)
   })
+
+  test('#update - return user w/ token', async () => {
+    // Given
+    const email = 'test@email.com'
+    const mockUser = userService.generateUser(email)
+    const updateUser = {
+      username: mockUser.username + '!'
+    }
+
+    // When
+    const data = await ctrl.update(mockUser, updateUser)
+
+    // Then
+    expect(data).toHaveProperty('user')
+    expect(data.user.username).toEqual(updateUser.username)
+    expect(data.user.token).not.toBeNull()
+  })
 })

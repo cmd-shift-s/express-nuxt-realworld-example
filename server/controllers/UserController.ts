@@ -1,4 +1,4 @@
-import { JsonController, CurrentUser, Get, Post, BodyParam } from 'routing-controllers'
+import { JsonController, CurrentUser, Get, Post, BodyParam, Put, NotFoundError } from 'routing-controllers'
 import debug from 'debug'
 import { UnprocessableEntityError } from '../common/errors'
 import { UserService } from '../services'
@@ -10,15 +10,23 @@ export interface UserLoginInfo {
   password: string
 }
 
-// export interface UserUpdateInfo {
-//   username: string
-// }
+export interface UserUpdateInfo {
+  email?: string
+  username?: string
+  password?: string
+  image?: string
+  bio?: string
+}
 
 @JsonController()
 export class UserController {
   private logger = debug('server:controllers:user')
 
   constructor(private userService: UserService) {}
+
+  private getSignToken(user: User, options?: jwt.SignOptions) {
+    return jwt.sign({ user }, process.env.JWT_SECRET, options)
+  }
 
   /**
    * Login
@@ -37,7 +45,7 @@ export class UserController {
 
     delete user.password
 
-    const token = jwt.sign({ user }, process.env.JWT_SECRET, {
+    const token = this.getSignToken(user, {
       expiresIn: '1d'
     })
 
@@ -67,20 +75,32 @@ export class UserController {
   /**
    * update user
    */
-  // TODO:
-  // @Put('/user')
-  // public async updateUser (
-  //   @CurrentUser({ required: true }) curUser: User,
-  //   @BodyParam('user') userInfo: UserUpdateInfo
-  // ) {
-  //   this.logger('update', userInfo)
-  //
-  //   const result = await this.userService.update(curUser)
-  //
-  //   if (!result) {
-  //     throw new NotFoundError('not found user')
-  //   }
-  //
-  //   return { user: userInfo }
-  // }
+  @Put('/user')
+  public async update (
+    @CurrentUser({ required: true }) curUser: User,
+    @BodyParam('user') userInfo: UserUpdateInfo
+  ) {
+    this.logger('update', userInfo)
+
+    const user: User = Object.assign({}, curUser, userInfo)
+
+    const result = await this.userService.update(user)
+
+    if (!result) {
+      throw new NotFoundError('not found user')
+    }
+
+    delete user.password
+
+    const token = this.getSignToken(user, {
+      expiresIn: '1d'
+    })
+
+    return {
+      user: {
+        ...user,
+        token
+      }
+    }
+  }
 }

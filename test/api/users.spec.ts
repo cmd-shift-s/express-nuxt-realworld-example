@@ -67,7 +67,7 @@ describe('API - users', () => {
     expect(res.body.user.token).not.toBeNull()
   })
 
-  test('should throw AuthorizedRequiredError', async () => {
+  test('should throw AuthorizedRequiredError #1', async () => {
     const res = await req.get('/api/user')
       .expect(401)
 
@@ -76,5 +76,52 @@ describe('API - users', () => {
     expect(res.body.errors.body).toBeInstanceOf(Array)
     expect(res.body.errors.body)
       .toContain('Authorization is required for request on GET /api/user')
+  })
+
+  test('should throw AuthorizedRequiredError #2', async () => {
+    const res = await req.put('/api/user')
+      .expect(401)
+
+    expect(res.body).toHaveProperty('errors')
+    expect(res.body.errors).toHaveProperty('body')
+    expect(res.body.errors.body).toBeInstanceOf(Array)
+    expect(res.body.errors.body)
+      .toContain('Authorization is required for request on PUT /api/user')
+  })
+
+  test('should return user w/ token', async () => {
+    // Given
+    const user = {
+      email: 'login@test.com',
+      password: 'Secret!'
+    }
+
+    // When
+    let res = await req.post('/api/users/login')
+      .send({ user })
+      .expect(200)
+
+    expect(res.body).toHaveProperty('user')
+    expect(res.body.user.token).not.toBeNull()
+
+    const loggedUser = res.body.user
+
+    const updateUser = {
+      username: `${loggedUser.username}!`,
+      email: `${loggedUser.email}!`
+    }
+
+    res = await req.put('/api/user')
+      .send({ user: updateUser })
+      .set('Authorization', `Bearer ${res.body.user.token}`)
+      .expect(200)
+
+    expect(res.body).toHaveProperty('user')
+    expect(res.body.user).not.toBeNull()
+    expect(res.body.user.username).toEqual(updateUser.username)
+    expect(res.body.user.email).toEqual(updateUser.email)
+    expect(res.body.user.token).not.toBeNull()
+    expect(res.body.user.token).not.toEqual(loggedUser.token)
+
   })
 })
