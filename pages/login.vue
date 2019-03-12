@@ -54,8 +54,12 @@ export default class LoginPage extends Vue {
       password: this.password
     }
 
-    await this.$auth.login({ data: { user: loginInfo } })
-    this.$router.push('/')
+    try {
+      await this.$auth.login({ data: { user: loginInfo } })
+      this.$router.push('/')
+    } catch (e) {
+      this.$store.commit('pushError', e.response.data)
+    }
   }
 }
 </script>
