@@ -83,7 +83,8 @@ module.exports = {
           login: { url: 'users/login', method: 'post', propertyName: 'user.token' },
           user: { url: 'user', method: 'get', propertyName: 'user' },
           logout: false
-        }
+        },
+        tokenType: 'Token'
       }
     }
   },

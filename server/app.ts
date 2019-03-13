@@ -32,7 +32,7 @@ function jwtChecker(action: Action, fn: (decoded: string | object) => any): Prom
   let token = action.request.headers['authorization']
 
   if (token) {
-    token = token.split(/Bearer\:?\s?/i)
+    token = token.split(/Token\:?\s?/i)
     token = token[token.length > 1 ? 1 : 0].trim()
   }
 
