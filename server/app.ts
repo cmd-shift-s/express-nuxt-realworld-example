@@ -1,5 +1,6 @@
 import 'reflect-metadata'
-import { useExpressServer, useContainer, RoutingControllersOptions, Action } from 'routing-controllers'
+import { useExpressServer, useContainer as useContainerRouting, RoutingControllersOptions, Action } from 'routing-controllers'
+import { useContainer as useContainerTypeOrm } from 'typeorm'
 import { Container } from 'typedi'
 import express from 'express'
 import morgan from 'morgan'
@@ -12,7 +13,8 @@ require('dotenv').config()
 const isDev = process.env.NODE_ENV === 'development'
 const isProd = process.env.NODE_ENV === 'production'
 
-useContainer(Container)
+useContainerTypeOrm(Container)
+useContainerRouting(Container)
 
 export const app = express()
 
