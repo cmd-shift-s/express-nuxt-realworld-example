@@ -56,7 +56,8 @@
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
-import { Profile, User } from '~/models'
+import { Profile } from '~/models'
+import { User } from '~/server/entity'
 
 const auth = namespace('auth')
 

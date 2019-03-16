@@ -1,5 +1,5 @@
 import * as faker from 'faker'
-import { User } from '~/models'
+import { User } from '../entity'
 
 export class UserService {
   generateUser(email: string): User {

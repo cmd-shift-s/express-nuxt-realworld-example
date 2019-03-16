@@ -102,7 +102,8 @@
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import CommentCard from '~/components/CommentCard.vue'
-import { Article, Comment, User } from '~/models'
+import { Article, Comment } from '~/models'
+import { User } from '~/server/entity'
 
 const auth = namespace('auth')
 

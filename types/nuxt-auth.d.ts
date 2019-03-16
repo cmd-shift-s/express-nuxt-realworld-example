@@ -4,7 +4,7 @@
 
 import Vue, { ComponentOptions } from 'vue'
 import { CookieAttributes } from 'js-cookie'
-import { User } from '~/models'
+import { User } from '~/server/entity'
 
 // todo: context?
 interface StorageCookieOptions extends CookieAttributes {
@@ -13,6 +13,7 @@ interface StorageCookieOptions extends CookieAttributes {
     options?: StorageCookieOptions;
   }
 }
+
 interface Storage {
   setUniversal(key: string, value: any, isJson?: boolean): string
   getUniversal(key: string, isJson?: boolean): any

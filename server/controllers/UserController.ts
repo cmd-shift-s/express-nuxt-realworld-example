@@ -2,7 +2,7 @@ import { JsonController, CurrentUser, Get, Post, BodyParam, Put, NotFoundError }
 import debug from 'debug'
 import { UnprocessableEntityError } from '../common/errors'
 import { UserService } from '../services'
-import { User } from '~/models'
+import { User } from '../entity'
 import jwt from 'jsonwebtoken'
 
 export interface UserLoginInfo {

@@ -5,7 +5,7 @@ import express from 'express'
 import morgan from 'morgan'
 import { NotFoundHandler, ErrorHandler } from './middlewares'
 import jwt from 'jsonwebtoken'
-import { User } from '~/models'
+import { User } from './entity'
 
 require('dotenv').config()
 
