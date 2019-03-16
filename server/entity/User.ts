@@ -4,7 +4,10 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
 export class User {
 
   @PrimaryGeneratedColumn()
-  id!: number
+  id?: number
+
+  @Column()
+  email!: string
 
   @Column()
   username!: string
@@ -13,10 +16,10 @@ export class User {
   bio!: string
 
   @Column()
-  image!: number
+  image!: string
 
   @Column()
-  passsword!: number
+  password!: string
 
   @Column('simple-array')
   roles!: string[]
