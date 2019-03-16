@@ -41,7 +41,7 @@ describe('API - users', () => {
     expect(res.body.errors.body).toEqual(['email or password is invalid'])
   })
 
-  test('should return user \\w authorization', async () => {
+  test('should return user w/ authorization', async () => {
     // Given
     const user = {
       email: 'login@test.com',
@@ -57,7 +57,7 @@ describe('API - users', () => {
     expect(res.body.user.token).not.toBeNull()
 
     res = await req.get('/api/user')
-      .set('Authorization', `Bearer ${res.body.user.token}`)
+      .set('Authorization', `Token ${res.body.user.token}`)
       .expect(200)
 
     // Then
@@ -113,7 +113,7 @@ describe('API - users', () => {
 
     res = await req.put('/api/user')
       .send({ user: updateUser })
-      .set('Authorization', `Bearer ${res.body.user.token}`)
+      .set('Authorization', `Token ${res.body.user.token}`)
       .expect(200)
 
     expect(res.body).toHaveProperty('user')
