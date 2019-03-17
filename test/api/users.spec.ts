@@ -1,8 +1,39 @@
 import request from 'supertest'
+import { createConnection, getConnection } from 'typeorm'
 import { app } from '~/server/app'
+import { User } from '~/server/entity'
 
 describe('API - users', () => {
   const req = request(app)
+
+  beforeAll(() => createConnection())
+
+  afterAll(() =>
+    getConnection()
+      .createQueryBuilder()
+      .delete()
+      .from(User)
+      .execute())
+
+  test('should return user', async () => {
+    // Given
+    const user = {
+      email: 'login@test.com',
+      username: 'username',
+      password: 'Secret!'
+    }
+
+    // When
+    const res = await req.post('/api/users')
+      .send({ user })
+      .expect(200)
+
+    // Then
+    expect(res.body).toHaveProperty('user')
+    expect(res.body.user).toHaveProperty('email')
+    expect(res.body.user.email).toBe(user.email)
+    expect(res.body.user.token).not.toBeNull()
+  })
 
   test('should return user', async () => {
     // Given

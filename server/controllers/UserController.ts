@@ -1,7 +1,7 @@
 import { JsonController, CurrentUser, Get, Post, BodyParam, Put, NotFoundError } from 'routing-controllers'
 import debug from 'debug'
 import { UnprocessableEntityError } from '../common/errors'
-import { UserService } from '../services'
+import { UserService, UserRegistInfo } from '../services'
 import { User } from '../entity'
 import jwt from 'jsonwebtoken'
 
@@ -61,13 +61,31 @@ export class UserController {
   }
 
   /**
+   * Regist
+   */
+  @Post('/users')
+  public async regist(
+    @BodyParam('user') registInfo: UserRegistInfo
+  ) {
+    const user = await this.userService.save(registInfo)
+
+    if (!user) {
+      // throw FailedInsertDatabaseException
+    }
+
+    return { user }
+  }
+
+  /**
    * returns current user
    */
   @Get('/user')
   public async me (
-    @CurrentUser({ required: true }) user: User,
+    @CurrentUser({ required: true }) curUser: User,
   ) {
-    this.logger(`user`, user)
+    this.logger(`me`, curUser)
+
+    const user = await this.userService.find(curUser.email)
 
     return { user }
   }
