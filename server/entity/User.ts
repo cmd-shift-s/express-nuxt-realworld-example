@@ -6,22 +6,22 @@ export class User {
   @PrimaryGeneratedColumn()
   id?: number
 
-  @Column()
+  @Column({ unique: true })
   email!: string
 
-  @Column()
+  @Column({ unique: true })
   username!: string
 
-  @Column()
-  bio!: string
+  @Column({ nullable: true })
+  bio?: string
+
+  @Column({ nullable: true })
+  image?: string
 
   @Column()
-  image!: string
+  password?: string
 
-  @Column()
-  password!: string
-
-  @Column('simple-array')
+  @Column('simple-array', { default: ['user'] })
   roles!: string[]
 
 }
