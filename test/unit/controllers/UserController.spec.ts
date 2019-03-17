@@ -1,3 +1,4 @@
+import { generateUser } from '../fixtures'
 import { UserController } from '~/server/controllers'
 import { UserService } from '~/server/services'
 import { UnprocessableEntityError } from '~/server/common/errors'
@@ -8,14 +9,14 @@ describe('UserController', () => {
   let userService: UserService
 
   beforeEach(() => {
-    userService = new UserService()
+    userService = new UserService({} as any)
     ctrl = new UserController(userService)
   })
 
   test('#login - return user', async () => {
     // Given
     const email = 'test@email.com'
-    const mockUser = userService.generateUser(email)
+    const mockUser = generateUser(email)
     userService.find = jest.fn().mockImplementation(() => mockUser)
 
     // When
@@ -34,7 +35,7 @@ describe('UserController', () => {
   test('#login - throw UnprocessableEntityError #1 invalid password', async () => {
     // Given
     const email = 'test@email.com'
-    const mockUser = userService.generateUser(email)
+    const mockUser = generateUser(email)
     userService.find = jest.fn().mockImplementation(() => mockUser)
 
     // When
@@ -49,7 +50,7 @@ describe('UserController', () => {
   test.skip('#login - throw UnprocessableEntityError #2 not found user', async () => {
     // Given
     const email = 'not_found@email.com'
-    const mockUser = userService.generateUser(email)
+    const mockUser = generateUser(email)
     userService.find = jest.fn().mockImplementation(() => mockUser)
 
     // When
@@ -64,14 +65,14 @@ describe('UserController', () => {
   test('#me - return user', async () => {
     // Given
     const email = 'test@email.com'
-    const mockUser = userService.generateUser(email)
-    // TODO: userService.find = jest.fn().mockImplementation(() => mockUser)
+    const mockUser = generateUser(email)
+    userService.find = jest.fn().mockImplementation(() => mockUser)
 
     // When
     const data = await ctrl.me(mockUser)
 
     // Then
-    // TODO: expect(userService.find).toHaveBeenCalledWith(email)
+    expect(userService.find).toHaveBeenCalledWith(email)
     expect(data).toHaveProperty('user')
     expect(data.user).toEqual(mockUser)
   })
@@ -79,7 +80,7 @@ describe('UserController', () => {
   test('#update - return user w/ token', async () => {
     // Given
     const email = 'test@email.com'
-    const mockUser = userService.generateUser(email)
+    const mockUser = generateUser(email)
     const updateUser = {
       username: mockUser.username + '!'
     }
