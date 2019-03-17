@@ -6,7 +6,7 @@ module.exports = {
   },
   setupFiles: [
     '<rootDir>/node_modules/reflect-metadata',
-    '<rootDir>/test/unit/setup.ts'
+    '<rootDir>/test/setup.ts'
   ],
   moduleFileExtensions: ['ts', 'js', 'vue', 'json'],
   testRegex: '(test|spec)\\.tsx?$',
