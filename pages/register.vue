@@ -76,12 +76,26 @@ export default class RegisterPage extends Vue {
     return errors.length
   }
 
-  regist() {
+  async regist() {
     if (this.formValidate()) {
       return false
     }
 
-    this.$router.push('login')
+    this.$store.commit('clearError')
+
+    const registInfo = {
+      email: this.email,
+      username: this.username,
+      password: this.password
+    }
+
+    try {
+      await this.$axios.$post('/users', { user: registInfo })
+      await this.$auth.login({ data: { user: registInfo } })
+      this.$router.push('/')
+    } catch (e) {
+      this.$store.commit('pushError', e.response.data)
+    }
 
     return true
   }
