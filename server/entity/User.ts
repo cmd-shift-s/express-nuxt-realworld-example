@@ -4,7 +4,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm'
 export class User {
 
   @PrimaryGeneratedColumn()
-  id?: number
+  id!: number
 
   @Column({ unique: true })
   email!: string
@@ -21,7 +21,7 @@ export class User {
   @Column()
   password?: string
 
-  @Column('simple-array', { default: ['user'] })
+  @Column('simple-array', { default: 'user' })
   roles!: string[]
 
 }
