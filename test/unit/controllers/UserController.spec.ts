@@ -17,7 +17,7 @@ describe('UserController', () => {
     // Given
     const email = 'test@email.com'
     const mockUser = generateUser(email)
-    userService.find = jest.fn().mockImplementation(() => mockUser)
+    userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
 
     // When
     const data = await ctrl.login({
@@ -25,7 +25,7 @@ describe('UserController', () => {
     })
 
     // Then
-    expect(userService.find).toHaveBeenCalledWith(email)
+    expect(userService.findByEmail).toHaveBeenCalledWith(email)
     expect(data).toHaveProperty('user')
     expect(data.user).toHaveProperty('email')
     expect(data.user.email).toBe(email)
@@ -36,7 +36,7 @@ describe('UserController', () => {
     // Given
     const email = 'test@email.com'
     const mockUser = generateUser(email)
-    userService.find = jest.fn().mockImplementation(() => mockUser)
+    userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
 
     // When
     await expect(ctrl.login({
@@ -44,14 +44,14 @@ describe('UserController', () => {
     })).rejects.toThrowError(new UnprocessableEntityError('email or password is invalid'))
 
     // Then
-    expect(userService.find).toHaveBeenCalledWith(email)
+    expect(userService.findByEmail).toHaveBeenCalledWith(email)
   })
 
   test.skip('#login - throw UnprocessableEntityError #2 not found user', async () => {
     // Given
     const email = 'not_found@email.com'
     const mockUser = generateUser(email)
-    userService.find = jest.fn().mockImplementation(() => mockUser)
+    userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
 
     // When
     await expect(ctrl.login({
@@ -59,36 +59,39 @@ describe('UserController', () => {
     })).rejects.toThrowError(new UnprocessableEntityError('email or password is invalid'))
 
     // Then
-    expect(userService.find).toHaveBeenCalledWith(email)
+    expect(userService.findByEmail).toHaveBeenCalledWith(email)
   })
 
   test('#me - return user', async () => {
     // Given
     const email = 'test@email.com'
     const mockUser = generateUser(email)
-    userService.find = jest.fn().mockImplementation(() => mockUser)
+    userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
 
     // When
     const data = await ctrl.me(mockUser)
 
     // Then
-    expect(userService.find).toHaveBeenCalledWith(email)
+    expect(userService.findByEmail).toHaveBeenCalledWith(email)
     expect(data).toHaveProperty('user')
     expect(data.user).toEqual(mockUser)
   })
 
-  test('#update - return user w/ token', async () => {
+  test('#update - return user', async () => {
     // Given
     const email = 'test@email.com'
     const mockUser = generateUser(email)
     const updateUser = {
       username: mockUser.username + '!'
     }
+    userService.update = jest.fn().mockImplementation(() => true)
 
     // When
     const data = await ctrl.update(mockUser, updateUser)
 
     // Then
+    expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateUser)
+
     expect(data).toHaveProperty('user')
     expect(data.user.username).toEqual(updateUser.username)
     expect(data.user.token).not.toBeNull()

@@ -3,6 +3,7 @@ import { User } from '~/server/entity'
 
 export function generateUser(email: string): User {
   return {
+    id: 1,
     email,
     password: 'Secret!',
     username: faker.internet.userName(),

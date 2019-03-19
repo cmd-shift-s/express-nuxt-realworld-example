@@ -1,21 +1,13 @@
 import { JsonController, CurrentUser, Get, Post, BodyParam, Put, NotFoundError } from 'routing-controllers'
 import debug from 'debug'
 import { UnprocessableEntityError } from '../common/errors'
-import { UserService, UserRegistInfo } from '../services'
+import { UserService, UserRegistInfo, UserUpdateInfo } from '../services'
 import { User } from '../entity'
 import jwt from 'jsonwebtoken'
 
 export interface UserLoginInfo {
   email: string
   password: string
-}
-
-export interface UserUpdateInfo {
-  email?: string
-  username?: string
-  password?: string
-  image?: string
-  bio?: string
 }
 
 @JsonController()
@@ -37,7 +29,7 @@ export class UserController {
   ) {
     this.logger(`login`, loginInfo)
 
-    const user = await this.userService.find(loginInfo.email)
+    const user = await this.userService.findByEmail(loginInfo.email)
 
     if (!user || user.password !== loginInfo.password) {
       throw new UnprocessableEntityError('email or password is invalid')
@@ -49,15 +41,12 @@ export class UserController {
       expiresIn: '1d'
     })
 
-    const loginUser = {
-      email: user.email,
-      username: user.username,
-      bio: user.bio,
-      image: user.image,
+    const loggedUser = {
+      ...user,
       token,
     }
 
-    return { user: loginUser }
+    return { user: loggedUser }
   }
 
   /**
@@ -85,7 +74,7 @@ export class UserController {
   ) {
     this.logger(`me`, curUser)
 
-    const user = await this.userService.find(curUser.email)
+    const user = await this.userService.findByEmail(curUser.email)
 
     return { user }
   }
@@ -100,25 +89,23 @@ export class UserController {
   ) {
     this.logger('update', userInfo)
 
-    const user: User = Object.assign({}, curUser, userInfo)
-
-    const result = await this.userService.update(user)
+    const result = await this.userService.update(curUser.id, userInfo)
 
     if (!result) {
       throw new NotFoundError('not found user')
     }
 
-    delete user.password
+    const user = Object.assign({}, curUser, userInfo)
 
     const token = this.getSignToken(user, {
       expiresIn: '1d'
     })
 
-    return {
-      user: {
-        ...user,
-        token
-      }
+    const loggedUser = {
+      ...user,
+      token,
     }
+
+    return { user: loggedUser }
   }
 }

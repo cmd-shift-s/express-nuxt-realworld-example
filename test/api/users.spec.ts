@@ -2,6 +2,7 @@ import request from 'supertest'
 import { createConnection, getConnection } from 'typeorm'
 import { app } from '~/server/app'
 import { User } from '~/server/entity'
+import { UserUpdateInfo } from '~/server/services'
 
 describe('API - users', () => {
   const req = request(app)
@@ -15,7 +16,7 @@ describe('API - users', () => {
       .from(User)
       .execute())
 
-  test('should return user', async () => {
+  test('should return user for regist', async () => {
     // Given
     const user = {
       email: 'login@test.com',
@@ -35,7 +36,7 @@ describe('API - users', () => {
     expect(res.body.user.token).not.toBeNull()
   })
 
-  test('should return user', async () => {
+  test('should return user for login', async () => {
     // Given
     const user = {
       email: 'login@test.com',
@@ -99,9 +100,11 @@ describe('API - users', () => {
   })
 
   test('should throw AuthorizedRequiredError #1', async () => {
+    // When
     const res = await req.get('/api/user')
       .expect(401)
 
+    // Then
     expect(res.body).toHaveProperty('errors')
     expect(res.body.errors).toHaveProperty('body')
     expect(res.body.errors.body).toBeInstanceOf(Array)
@@ -110,9 +113,11 @@ describe('API - users', () => {
   })
 
   test('should throw AuthorizedRequiredError #2', async () => {
+    // When
     const res = await req.put('/api/user')
       .expect(401)
 
+    // Then
     expect(res.body).toHaveProperty('errors')
     expect(res.body.errors).toHaveProperty('body')
     expect(res.body.errors.body).toBeInstanceOf(Array)
@@ -120,14 +125,13 @@ describe('API - users', () => {
       .toContain('Authorization is required for request on PUT /api/user')
   })
 
-  test('should return user w/ token', async () => {
+  test('update user and returns loggedUser', async () => {
     // Given
     const user = {
       email: 'login@test.com',
       password: 'Secret!'
     }
 
-    // When
     let res = await req.post('/api/users/login')
       .send({ user })
       .expect(200)
@@ -137,16 +141,18 @@ describe('API - users', () => {
 
     const loggedUser = res.body.user
 
-    const updateUser = {
+    const updateUser: UserUpdateInfo = {
       username: `${loggedUser.username}!`,
-      email: `${loggedUser.email}!`
+      email: `${loggedUser.email}!`,
     }
 
+    // When
     res = await req.put('/api/user')
       .send({ user: updateUser })
-      .set('Authorization', `Token ${res.body.user.token}`)
+      .set('Authorization', `Token ${loggedUser.token}`)
       .expect(200)
 
+    // Then
     expect(res.body).toHaveProperty('user')
     expect(res.body.user).not.toBeNull()
     expect(res.body.user.username).toEqual(updateUser.username)
