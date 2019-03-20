@@ -4,6 +4,7 @@ import { useContainer as useContainerTypeOrm } from 'typeorm'
 import { Container } from 'typedi'
 import express from 'express'
 import morgan from 'morgan'
+import helmet from 'helmet'
 import { NotFoundHandler, ErrorHandler } from './middlewares'
 import jwt from 'jsonwebtoken'
 import { User } from './entity'
@@ -21,6 +22,9 @@ export const app = express()
 if (isDev || isProd) {
   app.use(morgan(process.env.LOG_LEVEL))
 }
+
+app.set('trust proxy', 1)
+app.use(helmet())
 
 if (isProd) {
   app.use(express.static(__dirname + '/../public'))
