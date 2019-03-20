@@ -25,6 +25,12 @@ export class UserService {
     })
   }
 
+  findByUsername(username: string): Promise<User | undefined> {
+    return this.userRepository.findOne({
+      where: { username }
+    })
+  }
+
   save(info: UserRegistInfo): Promise<User> {
     return this.userRepository.save(info)
   }
