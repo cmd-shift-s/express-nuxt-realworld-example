@@ -4,7 +4,7 @@ import { HttpError } from 'routing-controllers'
  */
 export class UnprocessableEntityError extends HttpError {
   name: string = 'UnprocessableEntityError'
-  constructor(message?: string) {
-    super(422, message)
+  constructor(message: string | string[]) {
+    super(422, message as string)
   }
 }
