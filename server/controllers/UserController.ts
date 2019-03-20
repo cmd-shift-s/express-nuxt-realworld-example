@@ -56,6 +56,31 @@ export class UserController {
   public async regist(
     @BodyParam('user') registInfo: UserRegistInfo
   ) {
+    const errors: string[] = []
+    const { email, username, password } = registInfo
+
+    if (!username) {
+      errors.push('Name is required')
+    } else if (await this.userService.findByUsername(username)) {
+      errors.push('That username is already used')
+    }
+
+    if (!email) {
+      errors.push('Email is required')
+    } else if (await this.userService.findByEmail(email)) {
+      errors.push('That email is already taken')
+    }
+
+    if (!password) {
+      errors.push('password is required')
+    } else if (password.length < 8) {
+      errors.push('password is too short (minimum is 8 characters)')
+    }
+
+    if (errors.length > 0) {
+      throw new UnprocessableEntityError(errors)
+    }
+
     const user = await this.userService.save(registInfo)
 
     if (!user) {
