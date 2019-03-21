@@ -31,7 +31,7 @@ export class UserController {
 
     const user = await this.userService.findByEmail(loginInfo.email)
 
-    if (!user || user.password !== loginInfo.password) {
+    if (!user || !user.checkIfUnencryptedPasswordIsValid(loginInfo.password)) {
       throw new UnprocessableEntityError('email or password is invalid')
     }
 
@@ -81,10 +81,17 @@ export class UserController {
       throw new UnprocessableEntityError(errors)
     }
 
-    const user = await this.userService.save(registInfo)
+    let user = new User()
+    user.email = email
+    user.username = username
+    user.password = password
 
-    if (!user) {
-      // throw FailedInsertDatabaseException
+    user.hashPassword()
+
+    try {
+      user = await this.userService.save(user)
+    } catch (e) {
+      throw new UnprocessableEntityError('Failed to save')
     }
 
     return { user }
