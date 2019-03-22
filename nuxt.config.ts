@@ -1,12 +1,11 @@
-import { Context } from '@nuxt/vue-app'
-import { Configuration } from 'webpack'
+import NuxtConfiguration from '@nuxt/config'
 
 import dotenv from 'dotenv'
 dotenv.config()
 
 const isProd = process.env.NODE_ENV === 'production'
 
-module.exports = {
+const config: NuxtConfiguration = {
   mode: 'spa',
 
   /*
@@ -108,7 +107,7 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-    extend(config: Configuration, ctx: Context) {
+    extend(config, ctx) {
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
         if (!config.module) config.module = { rules: [] }
@@ -122,3 +121,5 @@ module.exports = {
     }
   }
 }
+
+export default config
