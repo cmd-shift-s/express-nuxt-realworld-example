@@ -32,5 +32,11 @@
       "@nuxt/vue-app",
       "@nuxtjs/axios"
     ]
-  }
+  },
+  "exclude": [
+    ".nuxt",
+    "node_modules",
+    "dist",
+    "coverage"
+  ]
 }
