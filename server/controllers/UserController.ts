@@ -36,6 +36,7 @@ export class UserController {
     }
 
     delete user.password
+    delete user.updatedAt
 
     const token = this.getSignToken(user, {
       expiresIn: '1d'
@@ -121,23 +122,56 @@ export class UserController {
   ) {
     this.logger('update', userInfo)
 
-    const result = await this.userService.update(curUser.id, userInfo)
+    const errors: string[] = []
 
-    if (!result) {
+    if (userInfo.password && userInfo.password.length < 8) {
+      errors.push('password is too short (minimum is 8 characters)')
+    }
+
+    if (errors.length > 0) {
+      throw new UnprocessableEntityError(errors)
+    }
+
+    const user = await this.userService.findById(curUser.id)
+
+    if (!user) {
       throw new NotFoundError('not found user')
     }
 
-    const user = Object.assign({}, curUser, userInfo)
+    Object.entries(userInfo)
+      .forEach(([key, value]) => {
+        if (value && value.length > 0) {
+          user[key] = value
+        }
+      })
 
-    const token = this.getSignToken(user, {
-      expiresIn: '1d'
-    })
-
-    const loggedUser = {
-      ...user,
-      token,
+    if (userInfo.password) {
+      user.hashPassword()
     }
 
-    return { user: loggedUser }
+    delete user.updatedAt
+
+    try {
+      const result = await this.userService.update(user.id, user)
+
+      if (!result) {
+        throw new NotFoundError('not found user')
+      }
+
+      delete user.password
+
+      const token = this.getSignToken(user, {
+        expiresIn: '1d'
+      })
+
+      const loggedUser = {
+        ...user,
+        token,
+      }
+
+      return { user: loggedUser }
+    } catch (e) {
+      throw new UnprocessableEntityError('failed to update')
+    }
   }
 }

@@ -5,7 +5,7 @@ import { User } from '../entity'
 import { Omit } from '~/types'
 
 export type UserRegistInfo = Pick<User, 'email' | 'username' | 'password'>
-export type UserUpdateInfo = Partial<Omit<User, 'id'>>
+export type UserUpdateInfo = Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'hashPassword' | 'checkIfUnencryptedPasswordIsValid'>>
 
 @Service()
 export class UserService {
