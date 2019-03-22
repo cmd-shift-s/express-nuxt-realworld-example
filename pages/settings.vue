@@ -6,6 +6,13 @@
           <h1 class="text-xs-center">
             Your Settings
           </h1>
+
+          <ul v-if="hasError" class="error-messages">
+            <li v-for="(message, i) of errorMessages" :key="i">
+              {{ message }}
+            </li>
+          </ul>
+
           <form @submit.prevent="onSubmit($event)">
             <fieldset>
               <fieldset class="form-group">
@@ -39,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, State, Getter } from 'nuxt-property-decorator'
 import { User } from '~/server/entity'
 
 const auth = namespace('auth')
@@ -49,8 +56,12 @@ const auth = namespace('auth')
 })
 export default class SettingsPage extends Vue {
   @auth.State user!: User
+  @State errorMessages!: string[]
+  @Getter hasError!: boolean
 
   async onSubmit({ target }: { target: HTMLFormElement }) {
+    this.$store.commit('clearError')
+
     function getFieldsValue(target: HTMLFormElement, ...fields: string[]) {
       return fields.reduce((obj: any, field) => {
         obj[field] = target[field].value
@@ -59,10 +70,14 @@ export default class SettingsPage extends Vue {
     }
 
     const user = getFieldsValue(target, 'email', 'username', 'password', 'image', 'bio')
-    const res = await this.$axios.$put('/user', { user })
-    this.$auth.setToken('local', res.user.token)
-    await this.$auth.fetchUser()
-    this.$router.push('/')
+    try {
+      const res = await this.$axios.$put('/user', { user })
+      this.$auth.setToken('local', res.user.token)
+      await this.$auth.fetchUser()
+      this.$router.push('/')
+    } catch (e) {
+      this.$store.commit('pushError', e.response.data)
+    }
   }
 
   async logout() {
