@@ -12,7 +12,7 @@ $ npm install
 $ cp .env.sample .env
 
 # serve with hot reload at localhost:3000
-$ npx nuxt-ts
+$ npx nuxt
 # run api server
 $ npm run dev
 
