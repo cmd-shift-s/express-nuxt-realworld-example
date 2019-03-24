@@ -5,7 +5,7 @@ import { User } from '../entity'
 import { Omit } from '~/types'
 
 export type UserRegistInfo = Pick<User, 'email' | 'username' | 'password'>
-export type UserUpdateInfo = Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'hashPassword' | 'checkIfUnencryptedPasswordIsValid'>>
+export type UserUpdateInfo = Partial<Omit<User, 'id' | 'followers' | 'createdAt' | 'updatedAt' | 'hashPassword' | 'checkIfUnencryptedPasswordIsValid'>>
 
 @Service()
 export class UserService {
@@ -40,4 +40,29 @@ export class UserService {
     // UpdateResult { generatedMaps: [], raw: [] }
     return this.userRepository.update(id, info)
   }
+
+  async isFollowing(id: number, followerId: number): Promise<boolean> {
+    const count = await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.followers', 'follower')
+      .where('user.id = :id', { id })
+      .andWhere('follower.id = :followerId', { followerId })
+      .getCount()
+
+    return Boolean(count)
+  }
+
+  follow(id: number, followerId: number) {
+    return this.userRepository.createQueryBuilder()
+      .relation('followers')
+      .of(id)
+      .add(followerId)
+  }
+
+  unfollow(id: number, followerId: number) {
+    return this.userRepository.createQueryBuilder()
+      .relation('followers')
+      .of(id)
+      .remove(followerId)
+  }
+
 }
