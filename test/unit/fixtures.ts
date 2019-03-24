@@ -3,9 +3,9 @@ import { User } from '~/server/entity'
 
 export function generateUser(email: string): User {
   const user = new User()
-  user.id = 1
+  user.id = faker.random.number()
   user.email = email
-  user.password = 'Secret!',
+  user.password = faker.internet.password(),
   user.username = faker.internet.userName(),
   user.bio = faker.lorem.sentence(),
   user.image = faker.image.avatar(),
