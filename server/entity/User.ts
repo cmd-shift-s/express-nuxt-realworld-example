@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm'
 import { hashSync, compareSync } from 'bcryptjs'
 
 @Entity()
@@ -35,6 +35,11 @@ export class User {
 
   @Column('simple-array', { default: 'user' })
   roles!: string[]
+
+  /** 나를 팔로워한 사용자들 */
+  @ManyToMany(_type => User)
+  @JoinTable()
+  followers?: User[]
 
   hashPassword() {
     this.password = hashSync(this.password, 8)
