@@ -14,12 +14,12 @@
               &nbsp;
               Edit Profile Settings
             </n-link>
-            <button v-else-if="profile.following" class="btn btn-sm action-btn btn-outline-secondary">
+            <button v-else-if="profile.following" class="btn btn-sm action-btn btn-outline-secondary" @click="unfollow()">
               <i class="ion-minus-round" />
               &nbsp;
               Unfollow {{ profile.username }}
             </button>
-            <button v-else class="btn btn-sm action-btn btn-outline-secondary">
+            <button v-else class="btn btn-sm action-btn btn-outline-secondary" @click="follow()">
               <i class="ion-plus-round" />
               &nbsp;
               Follow {{ profile.username }}
@@ -63,7 +63,7 @@ const auth = namespace('auth')
 
 @Component({
   async asyncData({ app, params }) {
-    const { profile } = await app.$axios.$get(`profile/${params.username}`)
+    const { profile } = await app.$axios.$get(`profiles/${params.username}`)
     return {
       profile
     }
@@ -75,5 +75,31 @@ export default class ProfilePage extends Vue {
   @auth.State user!: User
 
   profile!: Profile
+
+  get username() {
+    return this.$route.params.username
+  }
+
+  async follow() {
+    if (!this.loggedIn) {
+      return this.$router.push('/login')
+    }
+
+    try {
+      const { profile } = await this.$axios.$post(`profiles/${this.username}/follow`)
+      this.profile = profile
+    } catch (e) {}
+  }
+
+  async unfollow() {
+    if (!this.loggedIn) {
+      return this.$router.push('/login')
+    }
+
+    try {
+      const { profile } = await this.$axios.$delete(`profiles/${this.username}/follow`)
+      this.profile = profile
+    } catch (e) {}
+  }
 }
 </script>
