@@ -49,6 +49,7 @@
 import { Component, Vue, namespace, State, Getter } from 'nuxt-property-decorator'
 import { User } from '~/server/entity'
 import { getFieldsValue } from '~/plugins/utils'
+import { SubmitEvent } from '~/types'
 
 const auth = namespace('auth')
 
@@ -60,7 +61,7 @@ export default class SettingsPage extends Vue {
   @State errorMessages!: string[]
   @Getter hasError!: boolean
 
-  async onSubmit({ target }: { target: HTMLFormElement }) {
+  async onSubmit({ target }: SubmitEvent) {
     this.$store.commit('clearError')
 
     const user = getFieldsValue(target, 'email', 'username', 'password', 'image', 'bio')
