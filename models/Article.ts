@@ -12,3 +12,5 @@ export interface Article {
   favoritesCount: number
   author: Author
 }
+
+export type ArticleFormData = Pick<Article, 'title' | 'description' | 'body' | 'tagList'>
