@@ -25,7 +25,7 @@ export class UserController {
    */
   @Post('/users/login')
   public async login(
-    @BodyParam('user') loginInfo: UserLoginInfo
+    @BodyParam('user', { required: true }) loginInfo: UserLoginInfo
   ) {
     this.logger(`login`, loginInfo)
 
@@ -55,7 +55,7 @@ export class UserController {
    */
   @Post('/users')
   public async regist(
-    @BodyParam('user') registInfo: UserRegistInfo
+    @BodyParam('user', { required: true }) registInfo: UserRegistInfo
   ) {
     const errors: string[] = []
     const { email, username, password } = registInfo
