@@ -1,8 +1,42 @@
 import request from 'supertest'
+import faker from 'faker'
 import { app } from '~/server/app'
+import { Connection, createConnection } from 'typeorm'
+import { User } from '~/server/entity'
+import { ArticleFormData } from '~/models'
+import { getAuthentication, generateJoinedUser, JoinedUser } from '../utils'
 
 describe('API - articles', () => {
   const req = request(app)
+  let conn: Connection
+  let user: JoinedUser
+
+  beforeAll(async () => {
+    conn = await createConnection()
+    if (!conn || !conn.isConnected) {
+      fail('cannot connect database')
+    }
+  })
+
+  beforeEach(async () => {
+    if (!conn || !conn.isConnected) {
+      fail('cannot connect database')
+    }
+
+    user = await generateJoinedUser(conn)
+  })
+
+  afterEach(() => {
+    if (user && conn && conn.isConnected) {
+      return conn.getRepository(User).remove(user as User)
+    }
+  })
+
+  afterAll(() => {
+    if (conn && conn.isConnected) {
+      return conn.close()
+    }
+  })
 
   test('should return articles and articleCount', async () => {
     // When
@@ -16,7 +50,7 @@ describe('API - articles', () => {
     expect(res.body.articleCount).not.toBeNaN()
   })
 
-  test('should return articles and articleCount with limit', async () => {
+  test('get articles - returns Articles and articleCount', async () => {
     // Given
     const limit = 1
 
@@ -32,7 +66,7 @@ describe('API - articles', () => {
     expect(res.body.articleCount).toBe(limit)
   })
 
-  test('should return comments with slug', async () => {
+  test('get articles/_slug/comments - returns Comments', async () => {
     // Given
     const slug = 'article-slug'
 
@@ -45,7 +79,7 @@ describe('API - articles', () => {
     expect(res.body.comments).toBeInstanceOf(Array)
   })
 
-  test('should return article with slug', async () => {
+  test('get articles/_slug - returns Article', async () => {
     // Given
     const slug = 'article-slug'
 
@@ -59,4 +93,55 @@ describe('API - articles', () => {
     expect(res.body.article.slug).toBe(slug)
   })
 
+  test('post articles - throws Unauthorized', () => {
+    // Given
+    const article = {}
+
+    // When
+    return req.post(`/api/articles`)
+      .send({ article })
+
+    // Then
+    .expect(401)
+  })
+
+  test('post articles - throws NotFound', async () => {
+    // Given
+    const token = await getAuthentication(req, user)
+
+    // When
+    return req.post(`/api/articles`)
+      .set('Authorization', `Token ${token}`)
+
+    // Then
+    .expect(400)
+  })
+
+  test('post articles - returns Article', async () => {
+    // Given
+    const articleForm: ArticleFormData = {
+      title: faker.lorem.sentence(),
+      description: faker.lorem.sentence(),
+      body: faker.lorem.paragraph(),
+      tagList: faker.lorem.words().split(' ')
+    }
+
+    const token = await getAuthentication(req, user)
+
+    // When
+    const res = await req.post(`/api/articles`)
+      .set('Authorization', `Token ${token}`)
+      .send({ article: articleForm })
+      .expect(200)
+
+    expect(res.body).toHaveProperty('article')
+    expect(res.body.article.slug).not.toBeNull()
+    expect(res.body.article.title).toEqual(articleForm.title)
+    expect(res.body.article.description).toEqual(articleForm.description)
+    expect(res.body.article.body).toEqual(articleForm.body)
+    expect(res.body.article.tagList).toEqual(articleForm.tagList)
+    expect(res.body.article).toHaveProperty('author')
+    expect(res.body.article.author.email).toEqual(user.email)
+    expect(res.body.article.author.username).toEqual(user.username)
+  })
 })

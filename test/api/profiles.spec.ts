@@ -1,13 +1,13 @@
 import request from 'supertest'
-import faker from 'faker'
 import { createConnection, Connection } from 'typeorm'
 import { app } from '~/server/app'
 import { User } from '~/server/entity'
+import { getAuthentication, generateJoinedUser, JoinedUser } from '../utils'
 
 describe('API - profiles', () => {
   const req = request(app)
   let conn: Connection
-  let user: Pick<User, 'email' | 'username' | 'password'>
+  let user: JoinedUser
 
   beforeAll(async () => {
     conn = await createConnection()
@@ -21,41 +21,20 @@ describe('API - profiles', () => {
       fail('cannot connect database')
     }
 
-    user = {
-      email: faker.internet.email(),
-      username: faker.internet.userName(),
-      password: faker.internet.password(),
-    }
-
-    await req.post('/api/users')
-      .send({ user })
-      .expect(200)
+    user = await generateJoinedUser(conn)
   })
 
   afterEach(() => {
-    return conn.createQueryBuilder()
-      .delete()
-      .from(User)
-      .where({ email: user.email })
-      .execute()
-  })
-
-  afterAll(async () => {
-    if (conn && conn.isConnected) {
-      await conn.close()
+    if (user && conn && conn.isConnected) {
+      return conn.getRepository(User).remove(user as User)
     }
   })
 
-  async function getAuthentication(_user = user): Promise<string> {
-    const res = await req.post('/api/users/login')
-      .send({ user: _user })
-      .expect(200)
-
-    expect(res.body).toHaveProperty('user')
-    expect(res.body.user.token).not.toBeNull()
-
-    return res.body.user.token
-  }
+  afterAll(() => {
+    if (conn && conn.isConnected) {
+      return conn.close()
+    }
+  })
 
   test('should throws NotFound', () => {
     // Given
@@ -80,17 +59,9 @@ describe('API - profiles', () => {
 
   test('should returns Profile with following', async () => {
     // Given
-    const follower = {
-      email: faker.internet.email(),
-      username: faker.internet.userName(),
-      password: faker.internet.password(),
-    }
+    const follower = await generateJoinedUser(conn)
 
-    await req.post('/api/users')
-      .send({ user: follower })
-      .expect(200)
-
-    const followerToken = await getAuthentication(follower)
+    const followerToken = await getAuthentication(req, follower)
 
     await req.post('/api/profiles/' + user.username + '/follow')
       .set('Authorization', `Token ${followerToken}`)
@@ -110,17 +81,9 @@ describe('API - profiles', () => {
 
   test('should returns Profile(follow & unfollow)', async () => {
     // Given
-    let follower = {
-      email: faker.internet.email(),
-      username: faker.internet.userName(),
-      password: faker.internet.password(),
-    }
+    const follower = await generateJoinedUser(conn)
 
-    await req.post('/api/users')
-      .send({ user: follower })
-      .expect(200)
-
-    const followerToken = await getAuthentication(follower)
+    const followerToken = await getAuthentication(req, follower)
 
     // When
     let res = await req.post('/api/profiles/' + user.username + '/follow')
@@ -154,7 +117,7 @@ describe('API - profiles', () => {
 
   test('should throws NotFound #follow', async () => {
     // Given
-    const token = await getAuthentication()
+    const token = await getAuthentication(req, user)
     const username = 'not_found_user'
 
     // When
@@ -171,7 +134,7 @@ describe('API - profiles', () => {
 
   test('should throws NotFound #unfollow', async () => {
     // Given
-    const token = await getAuthentication()
+    const token = await getAuthentication(req, user)
     const username = 'not_found_user'
 
     // When
