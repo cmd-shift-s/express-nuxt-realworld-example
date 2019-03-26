@@ -18,14 +18,16 @@ describe('UserController', () => {
     const email = 'test@email.com'
     const mockUser = generateUser(email)
     userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
+    mockUser.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => true)
 
     // When
     const data = await ctrl.login({
-      email, password: 'Secret!'
+      email, password: mockUser.password
     })
 
     // Then
     expect(userService.findByEmail).toHaveBeenCalledWith(email)
+    expect(mockUser.checkIfUnencryptedPasswordIsValid).toHaveBeenCalled()
     expect(data).toHaveProperty('user')
     expect(data.user).toHaveProperty('email')
     expect(data.user.email).toBe(email)
@@ -37,6 +39,7 @@ describe('UserController', () => {
     const email = 'test@email.com'
     const mockUser = generateUser(email)
     userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
+    mockUser.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => false)
 
     // When
     await expect(ctrl.login({
@@ -45,13 +48,15 @@ describe('UserController', () => {
 
     // Then
     expect(userService.findByEmail).toHaveBeenCalledWith(email)
+    expect(mockUser.checkIfUnencryptedPasswordIsValid).toHaveBeenCalled()
   })
 
-  test.skip('#login - throw UnprocessableEntityError #2 not found user', async () => {
+  test('#login - throw UnprocessableEntityError #2 not found user', async () => {
     // Given
     const email = 'not_found@email.com'
     const mockUser = generateUser(email)
-    userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
+    userService.findByEmail = jest.fn().mockImplementation(() => null)
+    mockUser.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => false)
 
     // When
     await expect(ctrl.login({
@@ -60,6 +65,7 @@ describe('UserController', () => {
 
     // Then
     expect(userService.findByEmail).toHaveBeenCalledWith(email)
+    expect(mockUser.checkIfUnencryptedPasswordIsValid).not.toHaveBeenCalled()
   })
 
   test('#me - return user', async () => {
@@ -84,12 +90,16 @@ describe('UserController', () => {
     const updateUser = {
       username: mockUser.username + '!'
     }
+    userService.findById = jest.fn().mockImplementation(() => mockUser)
     userService.update = jest.fn().mockImplementation(() => true)
 
     // When
     const data = await ctrl.update(mockUser, updateUser)
 
+    Object.assign(updateUser, mockUser)
+
     // Then
+    expect(userService.findById).toHaveBeenCalledWith(mockUser.id)
     expect(userService.update).toHaveBeenCalledWith(mockUser.id, updateUser)
 
     expect(data).toHaveProperty('user')
