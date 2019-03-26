@@ -1,5 +1,6 @@
 import faker from 'faker'
-import { Article } from '~/models'
+import { Article, ArticleFormData } from '~/models'
+import { User } from '../entity'
 
 export class ArticleService {
   generateArticle(slug: string = faker.lorem.slug()): Article {
@@ -35,5 +36,14 @@ export class ArticleService {
 
   async read(slug: string): Promise<Article> {
     return Promise.resolve(this.generateArticle(slug))
+  }
+
+  async save(articleForm: ArticleFormData, author: User): Promise<Article> {
+    const article = this.generateArticle()
+
+    Object.assign(article, articleForm)
+    Object.assign(article.author, author)
+
+    return Promise.resolve(article)
   }
 }
