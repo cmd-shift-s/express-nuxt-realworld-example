@@ -1,19 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm'
 import { hashSync, compareSync } from 'bcryptjs'
 
 @Entity()
-@Unique([
-  'email', 'username'
-])
 export class User {
 
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Column()
+  @Column({ unique: true })
   email!: string
 
-  @Column()
+  @Column({ unique: true })
   username!: string
 
   @Column({ nullable: true })
