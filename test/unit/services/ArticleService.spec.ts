@@ -68,7 +68,7 @@ describe('ArticleService', () => {
 
     afterEach(async () => {
       if (article) {
-        repository.remove(article)
+        await repository.remove(article)
       }
     })
 
