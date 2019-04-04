@@ -45,6 +45,7 @@
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ArticlePreview from '~/components/ArticlePreview.vue'
+import { Article } from '~/models'
 
 const auth = namespace('auth')
 
@@ -67,6 +68,12 @@ const auth = namespace('auth')
 })
 export default class IndexPage extends Vue {
   @auth.State loggedIn!: boolean
+
+  tags: string[] = []
+  articles: Article[] = []
+  articleCount: number = 0
+
+  get isEmpty() { return this.articleCount === 0 }
 }
 </script>
 
