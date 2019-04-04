@@ -150,6 +150,8 @@ export class UserController {
     }
 
     delete user.updatedAt
+    // TODO: Entity와 DTO 분리 작업 필요
+    delete user.following
 
     try {
       const result = await this.userService.update(user.id, user)
