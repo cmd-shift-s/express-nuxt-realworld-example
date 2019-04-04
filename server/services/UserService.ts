@@ -2,10 +2,9 @@ import { Repository, UpdateResult } from 'typeorm'
 import { Service } from 'typedi'
 import { InjectRepository } from 'typeorm-typedi-extensions'
 import { User } from '../entity'
-import { Omit } from '~/types'
 
 export type UserRegistInfo = Pick<User, 'email' | 'username' | 'password'>
-export type UserUpdateInfo = Partial<Omit<User, 'id' | 'followers' | 'createdAt' | 'updatedAt' | 'hashPassword' | 'checkIfUnencryptedPasswordIsValid'>>
+export type UserUpdateInfo = Partial<Pick<User, 'bio' | 'email' | 'password' | 'image' | 'username' | 'roles'>>
 
 @Service()
 export class UserService {
