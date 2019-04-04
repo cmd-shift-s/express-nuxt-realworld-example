@@ -1,8 +1,9 @@
 import { ArticleController } from '~/server/controllers'
 import { ArticleService, CommentService } from '~/server/services'
-import { generateUser } from '../fixtures'
+import { generateUser, generateArticle } from '../fixtures'
 import { ArticleFormData } from '~/models'
 import faker from 'faker'
+import { User } from '~/server/entity'
 
 describe('ArticleController', () => {
 
@@ -11,14 +12,14 @@ describe('ArticleController', () => {
   let commentservice: CommentService
 
   beforeEach(() => {
-    articleService = new ArticleService()
+    articleService = new ArticleService({} as any)
     commentservice = new CommentService()
     ctrl = new ArticleController(articleService, commentservice)
   })
 
   test('#articles - returns artiles and articleCount', async () => {
     // Given
-    const mockArticles = Array.from({ length: 2 }, () => articleService.generateArticle())
+    const mockArticles = Array.from({ length: 2 }, () => generateArticle())
     articleService.list = jest.fn().mockImplementation(() => mockArticles)
     articleService.count = jest.fn().mockImplementation(() => mockArticles.length)
     const defaultLimit = 20
@@ -27,8 +28,8 @@ describe('ArticleController', () => {
     const data = await ctrl.articles()
 
     // Then
-    expect(articleService.list).toHaveBeenCalledWith(defaultLimit)
-    expect(articleService.count).toHaveBeenCalledWith(defaultLimit)
+    expect(articleService.list).toHaveBeenCalledWith(defaultLimit, undefined)
+    expect(articleService.count).toHaveBeenCalledWith()
     expect(data.articles).toBe(mockArticles)
     expect(data.articleCount).not.toBeNaN()
   })
@@ -51,23 +52,23 @@ describe('ArticleController', () => {
   test('#read - returns Article', async () => {
     // Given
     const slug = 'article-slug'
-    const mockArticle = articleService.generateArticle(slug)
-    articleService.read = jest.fn().mockImplementation(() => mockArticle)
+    const mockArticle = generateArticle(slug)
+    articleService.findBySlug = jest.fn().mockImplementation(() => mockArticle)
 
     // When
     const data = await ctrl.read(slug)
 
     // Then
-    expect(articleService.read).toHaveBeenCalledWith(slug)
+    expect(articleService.findBySlug).toHaveBeenCalledWith(slug)
     expect(data).toHaveProperty('article')
     expect(data.article).toHaveProperty('slug')
-    expect(data.article.slug).toBe(slug)
+    expect(data.article!.slug).toBe(slug)
   })
 
   test('#publish - returns Article', async () => {
     // Given
     const mockUser = generateUser('test@user.com')
-    const mockArticle = articleService.generateArticle()
+    const mockArticle = generateArticle()
     const articleForm: ArticleFormData = {
       title: faker.lorem.sentence(),
       description: faker.lorem.sentence(),
@@ -76,7 +77,7 @@ describe('ArticleController', () => {
     }
 
     Object.assign(mockArticle, articleForm)
-    Object.assign(mockArticle.author, mockUser)
+    mockArticle.author = mockUser
 
     articleService.save = jest.fn().mockImplementation(() => mockArticle)
 
@@ -91,8 +92,8 @@ describe('ArticleController', () => {
     expect(data.article.body).toEqual(articleForm.body)
     expect(data.article.tagList).toBe(articleForm.tagList)
     expect(data.article).toHaveProperty('author')
-    expect(data.article.author.username).toEqual(mockUser.username)
-    expect(data.article.author.bio).toEqual(mockUser.bio)
-    expect(data.article.author.image).toEqual(mockUser.image)
+    expect(data.article!.author!.username).toEqual(mockUser.username)
+    expect(data.article!.author!.bio).toEqual(mockUser.bio)
+    expect(data.article!.author!.image).toEqual(mockUser.image)
   })
 })

@@ -81,16 +81,36 @@ describe('API - articles', () => {
 
   test('get articles/_slug - returns Article', async () => {
     // Given
-    const slug = 'article-slug'
+    const articleForm: ArticleFormData = {
+      title: faker.lorem.sentence(),
+      description: faker.lorem.sentence(),
+      body: faker.lorem.paragraph(),
+      tagList: faker.lorem.words().split(' ')
+    }
+
+    const token = await getAuthentication(req, user)
+
+    let res = await req.post(`/api/articles`)
+      .set('Authorization', `Token ${token}`)
+      .send({ article: articleForm })
+      .expect(200)
+    const slug = res.body.article.slug
 
     // When
-    const res = await req.get(`/api/articles/${slug}`)
+    res = await req.get(`/api/articles/${slug}`)
       .expect(200)
 
     // Then
     expect(res.body).toHaveProperty('article')
     expect(res.body.article).toHaveProperty('slug')
     expect(res.body.article.slug).toBe(slug)
+    expect(res.body.article.title).toEqual(articleForm.title)
+    expect(res.body.article.description).toEqual(articleForm.description)
+    expect(res.body.article.body).toEqual(articleForm.body)
+    expect(res.body.article.tagList).toEqual(articleForm.tagList)
+    expect(res.body.article).toHaveProperty('author')
+    expect(res.body.article.author.email).toEqual(user.email)
+    expect(res.body.article.author.username).toEqual(user.username)
   })
 
   test('post articles - throws Unauthorized', () => {

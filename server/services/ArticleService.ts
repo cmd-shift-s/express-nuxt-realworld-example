@@ -1,49 +1,54 @@
-import faker from 'faker'
-import { Article, ArticleFormData } from '~/models'
-import { User } from '../entity'
+import { ArticleFormData } from '~/models'
+import { User, Article } from '../entity'
+import { InjectRepository } from 'typeorm-typedi-extensions'
+import { Repository } from 'typeorm'
+import slugify from 'slugify'
 
 export class ArticleService {
-  generateArticle(slug: string = faker.lorem.slug()): Article {
-    const updatedAt = faker.date.past()
-    return {
-      slug,
-      title: faker.lorem.sentence(),
-      description: faker.lorem.paragraph(),
-      body: faker.lorem.text(),
-      tagList: Array.from(
-          { length: faker.random.number({ min: 0, max: 10 }) },
-          () => faker.lorem.word()),
-      createdAt: faker.date.past(undefined, updatedAt).toISOString(),
-      updatedAt: updatedAt.toISOString(),
-      favorited: faker.random.boolean(),
-      favoritesCount: faker.random.number(),
-      author: {
-        username: faker.internet.userName(),
-        bio: faker.lorem.sentence(),
-        image: faker.image.avatar(),
-        following: faker.random.boolean()
-      }
+  constructor(
+    @InjectRepository(Article)
+    private articleRepository: Repository<Article>
+  ) {}
+
+  list(limit: number, user?: User): Promise<Article[]> {
+    const q = this.articleRepository.createQueryBuilder('article')
+      .loadRelationCountAndMap('article.favoritesCount', 'article.favoritedUsers', 'favoritedUsers')
+      .leftJoinAndSelect('article.author', 'author')
+
+    if (user) {
+      q.loadRelationCountAndMap('article.favorited', 'article.favoritedUsers', 'favorited', qb => {
+        return qb.andWhere('favorited.id = :userId', { userId: user.id })
+      })
+      // q.loadRelationCountAndMap('author.following', 'author.followers', 'follower', qb => {
+      //   return qb.andWhere('follower.id = :userId', { userId: user.id })
+      // })
     }
+
+    return q.limit(limit).getMany()
   }
 
-  async list(limit: number): Promise<Article[]> {
-    return Promise.resolve(Array.from({ length: limit }, this.generateArticle))
+  count(): Promise<number> {
+    return this.articleRepository.count()
   }
 
-  async count(limit: number): Promise<number> {
-    return Promise.resolve(limit ? limit : faker.random.number())
+  findById(id: number): Promise<Article | undefined> {
+    return this.articleRepository.findOne(id)
   }
 
-  async read(slug: string): Promise<Article> {
-    return Promise.resolve(this.generateArticle(slug))
+  findBySlug(slug: string): Promise<Article | undefined> {
+    return this.articleRepository.createQueryBuilder('article')
+      .leftJoinAndSelect('article.author', 'author')
+      .where({ slug })
+      .getOne()
   }
 
-  async save(articleForm: ArticleFormData, author: User): Promise<Article> {
-    const article = this.generateArticle()
+  save(articleForm: ArticleFormData, author: User): Promise<Article> {
+    const slug = slugify(articleForm.title)
 
-    Object.assign(article, articleForm)
-    Object.assign(article.author, author)
+    return this.articleRepository.save({ slug, ...articleForm, author })
+  }
 
-    return Promise.resolve(article)
+  remove(article: Article) {
+    return this.articleRepository.remove(article)
   }
 }

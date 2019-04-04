@@ -18,12 +18,13 @@ export class ArticleController {
    */
   @Get()
   public async articles(
-    @QueryParam('limit') limit: number = 20
+    @QueryParam('limit') limit: number = 20,
+    @CurrentUser() curUser?: User
   ) {
     this.logger(`articles`)
 
-    const articles = await this.articleService.list(limit)
-    const articleCount = await this.articleService.count(limit)
+    const articles = await this.articleService.list(limit, curUser)
+    const articleCount = await this.articleService.count()
 
     return {
       articles,
@@ -51,7 +52,7 @@ export class ArticleController {
   ) {
     this.logger('slug', slug)
 
-    const article = await this.articleService.read(slug)
+    const article = await this.articleService.findBySlug(slug)
 
     // TODO: check article not null
 
