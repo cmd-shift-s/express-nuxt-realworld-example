@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm'
 import { hashSync, compareSync } from 'bcryptjs'
+import { Article } from '.'
 
 @Entity()
 export class User {
@@ -37,6 +38,24 @@ export class User {
   @ManyToMany(_type => User)
   @JoinTable()
   followers?: User[]
+
+  /**
+   * 팔로워 여부
+   */
+  following: boolean = false
+
+  @OneToMany(_type => Article, article => article.author)
+  /**
+   * 작성한 articles
+   */
+  articles?: Article[]
+
+  @ManyToMany(_type => Article, article => article.favoritedUsers)
+  @JoinTable()
+  /**
+   * 좋아요한 articles
+   */
+  favoritedArticles?: Article[]
 
   hashPassword() {
     this.password = hashSync(this.password, 8)
