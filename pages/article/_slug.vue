@@ -2,7 +2,7 @@
   <div class="article-page">
     <div class="banner">
       <div class="container">
-        <h1>How to build webapps that scale</h1>
+        <h1>{{ article.title }}</h1>
 
         <div class="article-meta">
           <n-link :to="`/profile/${article.author.username}`">
@@ -14,17 +14,33 @@
             </n-link>
             <span class="date">{{ article.createdAt | date }}</span>
           </div>
-          <button class="btn btn-sm btn-outline-secondary">
-            <i class="ion-plus-round" />
-            &nbsp;
-            Follow {{ article.author.username }}<span class="counter">(10)</span>
-          </button>
-        &nbsp;&nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart" />
-            &nbsp;
-            Favorite Post <span class="counter">(29)</span>
-          </button>
+
+          <template v-if="isAuthor">
+            <n-link :to="`/editor/${article.slug}`" class="btn btn-sm btn-outline-secondary">
+              <i class="ion-edit" />
+              &nbsp;
+              Edit Article
+            </n-link>
+          &nbsp;&nbsp;
+            <button class="btn btn-sm btn-outline-danger" @click="removeArticle()">
+              <i class="ion-trash-a" />
+              &nbsp;
+              Delete Article
+            </button>
+          </template>
+          <template v-else>
+            <button class="btn btn-sm btn-outline-secondary">
+              <i class="ion-plus-round" />
+              &nbsp;
+              Follow {{ article.author.username }}<span class="counter">(10)</span>
+            </button>
+          &nbsp;&nbsp;
+            <button class="btn btn-sm btn-outline-primary">
+              <i class="ion-heart" />
+              &nbsp;
+              Favorite Post <span class="counter">(29)</span>
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -50,17 +66,32 @@
             <span class="date">{{ article.createdAt | date }}</span>
           </div>
 
-          <button class="btn btn-sm btn-outline-secondary">
-            <i class="ion-plus-round" />
-            &nbsp;
-            Follow {{ article.author.username }}<span class="counter">(10)</span>
-          </button>
-        &nbsp;
-          <button class="btn btn-sm btn-outline-primary">
-            <i class="ion-heart" />
-            &nbsp;
-            Favorite Post <span class="counter">(29)</span>
-          </button>
+          <template v-if="isAuthor">
+            <n-link :to="`/editor/${article.slug}`" class="btn btn-sm btn-outline-secondary">
+              <i class="ion-edit" />
+              &nbsp;
+              Edit Article
+            </n-link>
+          &nbsp;&nbsp;
+            <button class="btn btn-sm btn-outline-danger" @click="removeArticle()">
+              <i class="ion-trash-a" />
+              &nbsp;
+              Delete Article
+            </button>
+          </template>
+          <template v-else>
+            <button class="btn btn-sm btn-outline-secondary">
+              <i class="ion-plus-round" />
+              &nbsp;
+              Follow {{ article.author.username }}<span class="counter">(10)</span>
+            </button>
+          &nbsp;&nbsp;
+            <button class="btn btn-sm btn-outline-primary">
+              <i class="ion-heart" />
+              &nbsp;
+              Favorite Post <span class="counter">(29)</span>
+            </button>
+          </template>
         </div>
       </div>
 
@@ -129,5 +160,21 @@ export default class ArticlePage extends Vue {
 
   @auth.State loggedIn!: boolean
   @auth.State user!: User
+
+  get isAuthor() {
+    return this.loggedIn &&
+      this.article.author.username === this.user.username
+  }
+
+  async removeArticle() {
+    if (!this.isAuthor) {
+      return this.$router.push('/login')
+    }
+
+    const slug = this.article.slug
+
+    await this.$axios.$delete(`/articles/${slug}`)
+    this.$router.push('/')
+  }
 }
 </script>
