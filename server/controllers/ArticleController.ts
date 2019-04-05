@@ -1,4 +1,4 @@
-import { JsonController, Get, QueryParam, Param, Post, BodyParam, CurrentUser } from 'routing-controllers'
+import { JsonController, Get, QueryParam, Param, Post, BodyParam, CurrentUser, Delete, NotFoundError, BadRequestError } from 'routing-controllers'
 import debug from 'debug'
 import { ArticleService, CommentService } from '../services'
 import { ArticleFormData } from '~/models'
@@ -71,6 +71,29 @@ export class ArticleController {
 
     return {
       comments
+    }
+  }
+
+  @Delete('/:slug')
+  public async removeArticle(
+    @Param('slug') slug: string,
+    @CurrentUser({ required: true }) curUser: User
+  ) {
+
+    const article = await this.articleService.findBySlug(slug)
+
+    if (!article) {
+      throw new NotFoundError(`Not Found Article: ${slug}`)
+    }
+
+    if (article.author && article.author.username === curUser.username) {
+      await this.articleService.remove(article)
+    } else {
+      throw new BadRequestError()
+    }
+
+    return {
+      article
     }
   }
 }

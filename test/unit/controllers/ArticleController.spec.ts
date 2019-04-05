@@ -3,7 +3,6 @@ import { ArticleService, CommentService } from '~/server/services'
 import { generateUser, generateArticle } from '../fixtures'
 import { ArticleFormData } from '~/models'
 import faker from 'faker'
-import { User } from '~/server/entity'
 
 describe('ArticleController', () => {
 
@@ -86,6 +85,40 @@ describe('ArticleController', () => {
 
     // Then
     expect(articleService.save).toHaveBeenCalledWith(articleForm, mockUser)
+    expect(data).toHaveProperty('article')
+    expect(data.article.title).toEqual(articleForm.title)
+    expect(data.article.description).toEqual(articleForm.description)
+    expect(data.article.body).toEqual(articleForm.body)
+    expect(data.article.tagList).toBe(articleForm.tagList)
+    expect(data.article).toHaveProperty('author')
+    expect(data.article.author!.username).toEqual(mockUser.username)
+    expect(data.article.author!.bio).toEqual(mockUser.bio)
+    expect(data.article.author!.image).toEqual(mockUser.image)
+  })
+
+  test('#removeArticle - returns Article', async () => {
+    // Given
+    const mockUser = generateUser('test@user.com')
+    const mockArticle = generateArticle()
+    const articleForm: ArticleFormData = {
+      title: faker.lorem.sentence(),
+      description: faker.lorem.sentence(),
+      body: faker.lorem.paragraph(),
+      tagList: Array.from({ length: 3 }, () => faker.lorem.word())
+    }
+
+    Object.assign(mockArticle, articleForm)
+    mockArticle.author = mockUser
+
+    articleService.findBySlug = jest.fn().mockImplementation(() => mockArticle)
+    articleService.remove = jest.fn().mockImplementation(() => mockArticle)
+
+    // When
+    const data = await ctrl.removeArticle(mockArticle.slug, mockUser)
+
+    // Then
+    expect(articleService.findBySlug).toHaveBeenCalledWith(mockArticle.slug)
+    expect(articleService.remove).toHaveBeenCalledWith(mockArticle)
     expect(data).toHaveProperty('article')
     expect(data.article.title).toEqual(articleForm.title)
     expect(data.article.description).toEqual(articleForm.description)

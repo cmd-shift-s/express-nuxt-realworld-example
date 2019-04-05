@@ -48,7 +48,15 @@ export class ArticleService {
     return this.articleRepository.save({ slug, ...articleForm, author })
   }
 
-  remove(article: Article) {
+  remove(article: Article): Promise<Article> {
     return this.articleRepository.remove(article)
+  }
+
+  async isExistsBySlug(slug: string): Promise<boolean> {
+    const count = await this.articleRepository.count({
+      where: { slug }
+    })
+
+    return !!count
   }
 }
