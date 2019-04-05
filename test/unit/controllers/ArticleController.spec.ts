@@ -37,12 +37,14 @@ describe('ArticleController', () => {
     // Given
     const slug = 'article-slug'
     const mockComments = Array.from({ length: 2 }, () => commentservice.generateComment(slug))
+    articleService.isExistsBySlug = jest.fn().mockImplementation(() => true)
     commentservice.list = jest.fn().mockImplementation(() => mockComments)
 
     // When
     const data = await ctrl.comments(slug)
 
     // Then
+    expect(articleService.isExistsBySlug).toHaveBeenCalledWith(slug)
     expect(commentservice.list).toHaveBeenCalledWith(slug)
     expect(data).toHaveProperty('comments')
     expect(data.comments).toBe(mockComments)
@@ -61,7 +63,7 @@ describe('ArticleController', () => {
     expect(articleService.findBySlug).toHaveBeenCalledWith(slug)
     expect(data).toHaveProperty('article')
     expect(data.article).toHaveProperty('slug')
-    expect(data.article!.slug).toBe(slug)
+    expect(data.article.slug).toBe(slug)
   })
 
   test('#publish - returns Article', async () => {

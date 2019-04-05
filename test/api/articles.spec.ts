@@ -66,12 +66,33 @@ describe('API - articles', () => {
     expect(res.body.articleCount).toBe(limit)
   })
 
+  test('post articles - throws NotFound', async () => {
+    // When
+    return req.get(`/api/articles/${faker.lorem.slug()}/comments`)
+
+    // Then
+    .expect(404)
+  })
+
   test('get articles/_slug/comments - returns Comments', async () => {
     // Given
-    const slug = 'article-slug'
+    const articleForm: ArticleFormData = {
+      title: faker.lorem.sentence(),
+      description: faker.lorem.sentence(),
+      body: faker.lorem.paragraph(),
+      tagList: faker.lorem.words().split(' ')
+    }
+
+    const token = await getAuthentication(req, user)
+
+    let res = await req.post(`/api/articles`)
+      .set('Authorization', `Token ${token}`)
+      .send({ article: articleForm })
+      .expect(200)
+    const slug = res.body.article.slug
 
     // When
-    const res = await req.get(`/api/articles/${slug}/comments`)
+    res = await req.get(`/api/articles/${slug}/comments`)
       .expect(200)
 
     // Then

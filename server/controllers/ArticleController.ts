@@ -54,9 +54,13 @@ export class ArticleController {
 
     const article = await this.articleService.findBySlug(slug)
 
-    // TODO: check article not null
+    if (!article) {
+      throw new NotFoundError(`Not Found Article: ${slug}`)
+    }
 
-    return { article }
+    return {
+      article
+    }
   }
 
   @Get('/:slug/comments')
@@ -65,7 +69,9 @@ export class ArticleController {
   ) {
     this.logger(`comments`, slug)
 
-    // TODO: check article not null
+    if (!await this.articleService.isExistsBySlug(slug)) {
+      throw new NotFoundError(`Not Found Article: ${slug}`)
+    }
 
     const comments = await this.commentService.list(slug)
 
