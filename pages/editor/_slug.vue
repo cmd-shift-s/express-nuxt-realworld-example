@@ -45,16 +45,20 @@ import { getFieldsValue } from '~/plugins/utils'
     if (params.slug) {
       const { article } = await app.$axios.$get(`articles/${params.slug}`)
       return { articleForm: article }
+    } else {
+      return {
+        articleForm: {
+          title: '',
+          description: '',
+          body: '',
+          tagList: []
+        }
+      }
     }
   }
 })
 export default class EditorPage extends Vue {
-  articleForm: ArticleFormData = {
-    title: '',
-    description: '',
-    body: '',
-    tagList: []
-  }
+  articleForm!: ArticleFormData
 
   inputTag: string = ''
 
