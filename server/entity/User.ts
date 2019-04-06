@@ -40,6 +40,11 @@ export class User {
   followers?: User[]
 
   /**
+   * 팔로워 수
+   */
+  followerCount: number = 0
+
+  /**
    * 팔로워 여부
    */
   following: boolean = false

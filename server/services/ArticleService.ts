@@ -19,9 +19,6 @@ export class ArticleService {
       q.loadRelationCountAndMap('article.favorited', 'article.favoritedUsers', 'favorited', qb => {
         return qb.andWhere('favorited.id = :userId', { userId: user.id })
       })
-      // q.loadRelationCountAndMap('author.following', 'author.followers', 'follower', qb => {
-      //   return qb.andWhere('follower.id = :userId', { userId: user.id })
-      // })
     }
 
     return q.limit(limit).getMany()
@@ -35,11 +32,23 @@ export class ArticleService {
     return this.articleRepository.findOne(id)
   }
 
-  findBySlug(slug: string): Promise<Article | undefined> {
-    return this.articleRepository.createQueryBuilder('article')
+  findBySlug(slug: string, user?: User): Promise<Article | undefined> {
+    const q = this.articleRepository.createQueryBuilder('article')
+      .loadRelationCountAndMap('article.favoritesCount', 'article.favoritedUsers', 'favoritedUsers')
       .leftJoinAndSelect('article.author', 'author')
+      .loadRelationCountAndMap('author.followerCount', 'author.followers')
       .where({ slug })
-      .getOne()
+
+    if (user) {
+      q.loadRelationCountAndMap('article.favorited', 'article.favoritedUsers', 'favorited', qb => {
+        return qb.andWhere('favorited.id = :userId', { userId: user.id })
+      })
+      q.loadRelationCountAndMap('author.following', 'author.followers', 'follower', qb => {
+        return qb.andWhere('follower.id = :userId', { userId: user.id })
+      })
+    }
+
+    return q.getOne()
   }
 
   save(articleForm: ArticleFormData, author: User): Promise<Article> {
@@ -59,4 +68,19 @@ export class ArticleService {
 
     return !!count
   }
+
+  favorite(id: number, userId: number) {
+    return this.articleRepository.createQueryBuilder()
+      .relation('favoritedUsers')
+      .of(id)
+      .add(userId)
+  }
+
+  unfavorite(id: number, userId: number) {
+    return this.articleRepository.createQueryBuilder()
+      .relation('favoritedUsers')
+      .of(id)
+      .remove(userId)
+  }
+
 }

@@ -23,7 +23,13 @@
             </ul>
           </div>
 
-          <article-preview v-for="(article, i) of articles" :key="i" :article="article" />
+          <article-preview
+            v-for="(article, i) of articles"
+            :key="i"
+            :article="article"
+            @favorite="favorite($event)"
+            @unfavorite="unfavorite($event)"
+          />
         </div>
 
         <div class="col-md-3">
@@ -74,6 +80,31 @@ export default class IndexPage extends Vue {
   articleCount: number = 0
 
   get isEmpty() { return this.articleCount === 0 }
+
+  async favorite(article: Article) {
+    if (!this.loggedIn) {
+      return this.$router.push('/login')
+    }
+
+    try {
+      window.console.log(`articles/${article.slug}/favorite`)
+      const res = await this.$axios.$post(`articles/${article.slug}/favorite`)
+      Object.assign(article, res.article)
+    } catch (e) {}
+  }
+
+  async unfavorite(article: Article) {
+    if (!this.loggedIn) {
+      return this.$router.push('/login')
+    }
+
+    try {
+      window.console.log(`articles/${article.slug}/favorite`)
+      const res = await this.$axios.$delete(`articles/${article.slug}/favorite`)
+      Object.assign(article, res.article)
+      // Object.assign(article, updatedArticle)
+    } catch (e) {}
+  }
 }
 </script>
 

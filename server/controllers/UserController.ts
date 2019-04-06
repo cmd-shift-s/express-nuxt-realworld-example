@@ -5,6 +5,8 @@ import { UserService, UserRegistInfo, UserUpdateInfo } from '../services'
 import { User } from '../entity'
 import jwt from 'jsonwebtoken'
 
+import { hashSync } from 'bcryptjs'
+
 export interface UserLoginInfo {
   email: string
   password: string
@@ -138,36 +140,30 @@ export class UserController {
       throw new NotFoundError('not found user')
     }
 
-    Object.entries(userInfo)
-      .forEach(([key, value]) => {
-        if (value && value.length > 0) {
-          user[key] = value
-        }
-      })
-
     if (userInfo.password) {
-      user.hashPassword()
+      userInfo.password = hashSync(userInfo.password, 8)
     }
 
-    delete user.updatedAt
-    // TODO: Entity와 DTO 분리 작업 필요
-    delete user.following
-
     try {
-      const result = await this.userService.update(user.id, user)
+      const result = await this.userService.update(user.id, userInfo)
 
       if (!result) {
         throw new NotFoundError('not found user')
       }
 
-      delete user.password
+      const updatedUser = await this.userService.findById(curUser.id)
+      if (!updatedUser) {
+        throw new NotFoundError(`not found user`)
+      }
 
-      const token = this.getSignToken(user, {
+      delete updatedUser.password
+
+      const token = this.getSignToken(updatedUser, {
         expiresIn: '1d'
       })
 
       const loggedUser = {
-        ...user,
+        ...updatedUser,
         token,
       }
 

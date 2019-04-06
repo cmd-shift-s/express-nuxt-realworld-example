@@ -10,7 +10,7 @@
         </n-link>
         <span class="date">{{ article.createdAt | date }}</span>
       </div>
-      <button class="btn btn-sm pull-xs-right" :class="favoriteButtonClass">
+      <button class="btn btn-sm pull-xs-right" :class="favoriteButtonClass" @click="toggleFavorite()">
         <i class="ion-heart" /> {{ article.favoritesCount }}
       </button>
       <n-link :to="`/article/${article.slug}`" class="preview-link">
@@ -28,17 +28,34 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
-import { Article } from '~/models'
+import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+import { Article, User } from '~/server/entity'
+
+const auth = namespace('auth')
 
 @Component
 export default class ArticlePreview extends Vue {
   @Prop({ required: true }) article!: Article
 
+  @auth.State loggedIn!: boolean
+  @auth.State user!: User
+
   get favoriteButtonClass() {
     return [
       this.article.favorited ? 'btn-primary' : 'btn-outline-primary'
     ]
+  }
+
+  toggleFavorite() {
+    if (!this.loggedIn) {
+      return this.$router.push('/login')
+    }
+
+    if (this.article.favorited) {
+      this.$emit('unfavorite', this.article)
+    } else {
+      this.$emit('favorite', this.article)
+    }
   }
 }
 </script>

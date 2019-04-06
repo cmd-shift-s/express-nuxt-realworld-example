@@ -13,7 +13,8 @@ export class CommentService {
         username: faker.internet.userName(),
         bio: faker.lorem.sentence(),
         image: faker.image.avatar(),
-        following: faker.random.boolean()
+        following: faker.random.boolean(),
+        followerCount: faker.random.number()
       }
     }
   }

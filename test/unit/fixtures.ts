@@ -17,6 +17,7 @@ export function generateUser(email: string = faker.internet.email()): User {
 
 export function generateArticle(slug: string = faker.lorem.slug()): Article {
   const article = new Article()
+  article.id = faker.random.number()
   article.slug = slug
   article.title = faker.lorem.sentence(),
   article.description = faker.lorem.sentence(),

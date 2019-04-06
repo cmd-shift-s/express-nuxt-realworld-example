@@ -3,4 +3,5 @@ export interface Author {
   bio: string
   image: string
   following: boolean
+  followerCount: number
 }

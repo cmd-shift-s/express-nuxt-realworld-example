@@ -219,4 +219,82 @@ describe('API - articles', () => {
     expect(res.body.article.author.email).toEqual(user.email)
     expect(res.body.article.author.username).toEqual(user.username)
   })
+
+  test('post articles/_slug/favorite - returns Article', async () => {
+    // Given
+    const articleForm: ArticleFormData = {
+      title: faker.lorem.sentence(),
+      description: faker.lorem.sentence(),
+      body: faker.lorem.paragraph(),
+      tagList: faker.lorem.words().split(' ')
+    }
+
+    const token = await getAuthentication(req, user)
+
+    let res = await req.post(`/api/articles`)
+      .set('Authorization', `Token ${token}`)
+      .send({ article: articleForm })
+      .expect(200)
+
+    const slug = res.body.article.slug
+
+    // When
+    res = await req.post(`/api/articles/${slug}/favorite`)
+      .set('Authorization', `Token ${token}`)
+      .expect(200)
+
+    // Then
+    expect(res.body).toHaveProperty('article')
+    expect(res.body.article.favorited).toBeTruthy()
+    expect(res.body.article.favoritesCount).toBeGreaterThanOrEqual(1)
+    expect(res.body.article.slug).toEqual(slug)
+    expect(res.body.article.title).toEqual(articleForm.title)
+    expect(res.body.article.description).toEqual(articleForm.description)
+    expect(res.body.article.body).toEqual(articleForm.body)
+    expect(res.body.article.tagList).toEqual(articleForm.tagList)
+    expect(res.body.article).toHaveProperty('author')
+    expect(res.body.article.author.email).toEqual(user.email)
+    expect(res.body.article.author.username).toEqual(user.username)
+  })
+
+  test('delete articles/_slug/favorite - returns Article', async () => {
+    // Given
+    const articleForm: ArticleFormData = {
+      title: faker.lorem.sentence(),
+      description: faker.lorem.sentence(),
+      body: faker.lorem.paragraph(),
+      tagList: faker.lorem.words().split(' ')
+    }
+
+    const token = await getAuthentication(req, user)
+
+    let res = await req.post(`/api/articles`)
+      .set('Authorization', `Token ${token}`)
+      .send({ article: articleForm })
+      .expect(200)
+
+    const slug = res.body.article.slug
+
+    await req.post(`/api/articles/${slug}/favorite`)
+      .set('Authorization', `Token ${token}`)
+      .expect(200)
+
+    // When
+    res = await req.delete(`/api/articles/${slug}/favorite`)
+      .set('Authorization', `Token ${token}`)
+      .expect(200)
+
+    // Then
+    expect(res.body).toHaveProperty('article')
+    expect(res.body.article.favorited).toBeFalsy()
+    expect(res.body.article.favoritesCount).toEqual(0)
+    expect(res.body.article.slug).toEqual(slug)
+    expect(res.body.article.title).toEqual(articleForm.title)
+    expect(res.body.article.description).toEqual(articleForm.description)
+    expect(res.body.article.body).toEqual(articleForm.body)
+    expect(res.body.article.tagList).toEqual(articleForm.tagList)
+    expect(res.body.article).toHaveProperty('author')
+    expect(res.body.article.author.email).toEqual(user.email)
+    expect(res.body.article.author.username).toEqual(user.username)
+  })
 })

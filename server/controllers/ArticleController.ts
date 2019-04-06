@@ -1,4 +1,4 @@
-import { JsonController, Get, QueryParam, Param, Post, BodyParam, CurrentUser, Delete, NotFoundError, BadRequestError } from 'routing-controllers'
+import { JsonController, Get, QueryParam, Param, Post, BodyParam, CurrentUser, Delete, NotFoundError, BadRequestError, InternalServerError } from 'routing-controllers'
 import debug from 'debug'
 import { ArticleService, CommentService } from '../services'
 import { ArticleFormData } from '~/models'
@@ -48,11 +48,12 @@ export class ArticleController {
 
   @Get('/:slug')
   public async read(
-    @Param('slug') slug: string
+    @Param('slug') slug: string,
+    @CurrentUser() curUser?: User
   ) {
     this.logger('slug', slug)
 
-    const article = await this.articleService.findBySlug(slug)
+    const article = await this.articleService.findBySlug(slug, curUser)
 
     if (!article) {
       throw new NotFoundError(`Not Found Article: ${slug}`)
@@ -101,5 +102,59 @@ export class ArticleController {
     return {
       article
     }
+  }
+
+  @Post('/:slug/favorite')
+  public async favorite(
+    @Param('slug') slug: string,
+    @CurrentUser({ required: true }) curUser: User
+  ) {
+    const article = await this.articleService.findBySlug(slug, curUser)
+
+    if (!article) {
+      throw new NotFoundError(`Not Found Article: ${slug}`)
+    }
+
+    if (article.favorited) {
+      return { article }
+    }
+
+    try {
+      await this.articleService.favorite(article.id, curUser.id)
+
+      article.favorited = true
+      article.favoritesCount++
+    } catch (e) {
+      throw new InternalServerError('failed to update')
+    }
+
+    return { article }
+  }
+
+  @Delete('/:slug/favorite')
+  public async unfavorite(
+    @Param('slug') slug: string,
+    @CurrentUser({ required: true }) curUser: User
+  ) {
+    const article = await this.articleService.findBySlug(slug, curUser)
+
+    if (!article) {
+      throw new NotFoundError(`Not Found Article: ${slug}`)
+    }
+
+    if (!article.favorited) {
+      return { article }
+    }
+
+    try {
+      await this.articleService.unfavorite(article.id, curUser.id)
+
+      article.favorited = false
+      article.favoritesCount--
+    } catch (e) {
+      throw new InternalServerError('failed to update')
+    }
+
+    return { article }
   }
 }
