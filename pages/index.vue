@@ -23,6 +23,14 @@
             </ul>
           </div>
 
+          <div v-if="loadingArticle">
+            Loading articles...
+          </div>
+
+          <div v-else-if="articleCount === 0">
+            No articles are here... yet.
+          </div>
+
           <article-preview
             v-for="(article, i) of articles"
             :key="i"
@@ -35,6 +43,10 @@
         <div class="col-md-3">
           <div class="sidebar">
             <p>Popular Tags</p>
+
+            <div v-if="loadingTags" class="tag-list">
+              Loading tags...
+            </div>
 
             <div class="tag-list">
               <n-link v-for="(tag, i) of tags" :key="i" to="" class="tag-pill tag-default">
@@ -51,23 +63,11 @@
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import ArticlePreview from '~/components/ArticlePreview.vue'
-import { Article } from '~/models'
+import { Article } from '~/server/entity'
 
 const auth = namespace('auth')
 
 @Component({
-  async asyncData({ app }) {
-    const [{ tags }, { articles, articleCount }] = await Promise.all([
-      app.$axios.$get('tags'),
-      app.$axios.$get('articles', { params: { limit: 10 } })
-    ])
-
-    return {
-      tags,
-      articles,
-      articleCount
-    }
-  },
   components: {
     ArticlePreview
   }
@@ -79,7 +79,28 @@ export default class IndexPage extends Vue {
   articles: Article[] = []
   articleCount: number = 0
 
-  get isEmpty() { return this.articleCount === 0 }
+  loadingArticle: boolean = false
+  loadingTags: boolean = false
+
+  beforeMount() {
+    this.loadArticles()
+    this.loadTags()
+  }
+
+  async loadArticles() {
+    this.loadingArticle = true
+    const { articles, articleCount } = await this.$axios.$get('articles', { params: { limit: 10 } })
+    this.loadingArticle = false
+    this.articles = articles
+    this.articleCount = articleCount
+  }
+
+  async loadTags() {
+    this.loadingTags = true
+    const { tags } = await this.$axios.$get('tags')
+    this.loadingTags = false
+    this.tags = tags
+  }
 
   async favorite(article: Article) {
     if (!this.loggedIn) {
@@ -87,7 +108,6 @@ export default class IndexPage extends Vue {
     }
 
     try {
-      window.console.log(`articles/${article.slug}/favorite`)
       const res = await this.$axios.$post(`articles/${article.slug}/favorite`)
       Object.assign(article, res.article)
     } catch (e) {}
@@ -99,10 +119,8 @@ export default class IndexPage extends Vue {
     }
 
     try {
-      window.console.log(`articles/${article.slug}/favorite`)
       const res = await this.$axios.$delete(`articles/${article.slug}/favorite`)
       Object.assign(article, res.article)
-      // Object.assign(article, updatedArticle)
     } catch (e) {}
   }
 }
