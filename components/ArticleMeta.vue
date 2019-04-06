@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="article-meta">
     <n-link :to="`/profile/${article.author.username}`">
-      <img :src="article.author.image">
+      <img :src="article.author.image || 'https://static.productionready.io/images/smiley-cyrus.jpg'">
     </n-link>
     <div class="info">
       <n-link :to="`/profile/${article.author.username}`" class="author">
