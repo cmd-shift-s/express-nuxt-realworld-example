@@ -24,7 +24,7 @@
       </button>
     </template>
     <template v-else>
-      <button v-if="article.author.following" class="btn btn-sm btn-outline-secondary" @click="$emit('unfollow')">
+      <button v-if="article.author.following" class="btn btn-sm btn-secondary" @click="$emit('unfollow')">
         <i class="ion-minus-round" />
         &nbsp;
         Unfollow {{ article.author.username }}<span class="counter">({{ article.author.followerCount }})</span>
@@ -35,7 +35,7 @@
         Follow {{ article.author.username }}<span class="counter">({{ article.author.followerCount }})</span>
       </button>
       &nbsp;&nbsp;
-      <button v-if="article.favorited" class="btn btn-sm btn-outline-primary" @click="$emit('unfavorite')">
+      <button v-if="article.favorited" class="btn btn-sm btn-primary" @click="$emit('unfavorite')">
         <i class="ion-heart" />
         &nbsp;
         Unfavorite Post <span class="counter">({{ article.favoritesCount }})</span>
