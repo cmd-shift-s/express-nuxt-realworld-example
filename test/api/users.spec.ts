@@ -54,6 +54,7 @@ describe('API - users', () => {
     // Then
     expect(res.body).toHaveProperty('user')
     expect(res.body.user).toHaveProperty('email')
+    expect(res.body.user).not.toHaveProperty('password')
     expect(res.body.user.email).toBe(registInfo.email)
     expect(res.body.user.token).not.toBeNull()
   })
@@ -103,6 +104,7 @@ describe('API - users', () => {
     // Then
     expect(res.body).toHaveProperty('user')
     expect(res.body.user).toHaveProperty('email')
+    expect(res.body.user).not.toHaveProperty('password')
     expect(res.body.user.email).toBe(user.email)
     expect(res.body.user.token).not.toBeNull()
   })
@@ -154,6 +156,7 @@ describe('API - users', () => {
     // Then
     expect(res.body).toHaveProperty('user')
     expect(res.body.user).toHaveProperty('email')
+    expect(res.body.user).not.toHaveProperty('password')
     expect(res.body.user.email).toBe(user.email)
     expect(res.body.user.token).not.toBeNull()
   })
@@ -202,6 +205,7 @@ describe('API - users', () => {
     // Then
     expect(res.body).toHaveProperty('user')
     expect(res.body.user).not.toBeNull()
+    expect(res.body.user).not.toHaveProperty('password')
     expect(res.body.user.username).toEqual(updateUser.username)
     expect(res.body.user.email).toEqual(updateUser.email)
     expect(res.body.user.token).not.toBeNull()

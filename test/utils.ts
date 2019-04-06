@@ -3,6 +3,7 @@ import { UserLoginInfo } from '~/server/controllers'
 import { User } from '~/server/entity'
 import { Connection } from 'typeorm'
 import faker from 'faker'
+import { hash } from 'bcryptjs'
 
 export async function getAuthentication(req: SuperTest<Test>, user: UserLoginInfo): Promise<string> {
   const res = await req.post('/api/users/login')
@@ -22,20 +23,20 @@ export async function generateJoinedUser(conn: Connection): Promise<JoinedUser> 
     fail('cannot connect database')
   }
 
+  const password = faker.internet.password()
+
   const registUserInfo = {
     id: 0,
     email: faker.internet.email(),
     username: faker.internet.userName(),
-    password: faker.internet.password(),
+    password: await hash(password, 8),
   }
 
-  const user = Object.assign(new User(), registUserInfo)
-  user.hashPassword()
-
   const { id } = await conn.getRepository(User)
-    .save(user)
+    .save(registUserInfo)
 
   registUserInfo.id = id
+  registUserInfo.password = password
 
   return registUserInfo
 }

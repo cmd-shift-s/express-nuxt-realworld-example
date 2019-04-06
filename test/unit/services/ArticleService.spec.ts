@@ -99,6 +99,8 @@ describe('ArticleService', () => {
       expect(article.description).toEqual(_article.description)
       expect(article.body).toEqual(_article.body)
       expect(article.tagList).toEqual(expect.arrayContaining(_article.tagList))
+      expect(article).toHaveProperty('author')
+      expect(article.author).not.toHaveProperty('password')
     })
   })
 
@@ -157,6 +159,8 @@ describe('ArticleService', () => {
       expect(article.description).toEqual(_article.description)
       expect(article.title).toEqual(_article.title)
       expect(article.tagList).toEqual(expect.arrayContaining(_article.tagList))
+      expect(article).not.toHaveProperty('author')
+      // expect(article.author).not.toHaveProperty('password')
     })
   })
 
@@ -182,6 +186,7 @@ describe('ArticleService', () => {
       expect(article!.slug).toEqual(_article.slug)
       expect(article!.createdAt).toEqual(_article.createdAt)
       expect(article!.updatedAt).toEqual(_article.updatedAt)
+      expect(article!.author).not.toHaveProperty('password')
     })
   })
 })

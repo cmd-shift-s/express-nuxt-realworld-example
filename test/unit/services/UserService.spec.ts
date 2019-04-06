@@ -200,7 +200,15 @@ describe('UserService', () => {
       // typeorm에서 postgres의 업데이트 결과를 받지 못함.
       expect(updateResult.raw.length).toBe(0) // toBe(1)
 
-      const updatedUser = await repository.findOneOrFail(user.id)
+      const updatedUser = await repository.createQueryBuilder('user')
+        .addSelect(['user.password', 'user.roles'])
+        .where('id = :id', user)
+        .getOne()
+
+      if (!updatedUser) {
+        fail('updatedUser must not be null')
+        return
+      }
 
       expect(updatedUser.email).toEqual(updateUser.email)
       expect(updatedUser.password).toEqual(updateUser.password)

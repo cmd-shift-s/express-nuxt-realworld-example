@@ -5,8 +5,6 @@ import { UserService, UserRegistInfo, UserUpdateInfo } from '../services'
 import { User } from '../entity'
 import jwt from 'jsonwebtoken'
 
-import { hashSync } from 'bcryptjs'
-
 export interface UserLoginInfo {
   email: string
   password: string
@@ -33,7 +31,7 @@ export class UserController {
 
     const user = await this.userService.findByEmail(loginInfo.email)
 
-    if (!user || !user.checkIfUnencryptedPasswordIsValid(loginInfo.password)) {
+    if (!user || !await this.userService.checkIfUnencryptedPasswordIsValid(user.id, loginInfo.password)) {
       throw new UnprocessableEntityError('email or password is invalid')
     }
 
@@ -84,20 +82,18 @@ export class UserController {
       throw new UnprocessableEntityError(errors)
     }
 
-    let user = new User()
-    user.email = email
-    user.username = username
-    user.password = password
-
-    user.hashPassword()
-
     try {
-      user = await this.userService.save(user)
+      const { id } = await this.userService.save(registInfo)
+
+      const user = await this.userService.findById(id)
+      if (!user) {
+        throw new NotFoundError()
+      }
+
+      return { user }
     } catch (e) {
       throw new UnprocessableEntityError('Failed to save')
     }
-
-    return { user }
   }
 
   /**
@@ -140,23 +136,17 @@ export class UserController {
       throw new NotFoundError('not found user')
     }
 
-    if (userInfo.password) {
-      userInfo.password = hashSync(userInfo.password, 8)
-    }
-
     try {
       const result = await this.userService.update(user.id, userInfo)
 
       if (!result) {
-        throw new NotFoundError('not found user')
+        // throw failed to update
       }
 
       const updatedUser = await this.userService.findById(curUser.id)
       if (!updatedUser) {
         throw new NotFoundError(`not found user`)
       }
-
-      delete updatedUser.password
 
       const token = this.getSignToken(updatedUser, {
         expiresIn: '1d'

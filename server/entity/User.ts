@@ -20,7 +20,7 @@ export class User {
   @Column({ nullable: true })
   image?: string
 
-  @Column()
+  @Column({ select: false })
   password!: string
 
   @Column()
@@ -31,7 +31,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt!: Date
 
-  @Column('simple-array', { default: 'user' })
+  @Column('simple-array', { default: 'user', select: false })
   roles!: string[]
 
   /** 나를 팔로워한 사용자들 */
@@ -61,12 +61,4 @@ export class User {
    * 좋아요한 articles
    */
   favoritedArticles?: Article[]
-
-  hashPassword() {
-    this.password = hashSync(this.password, 8)
-  }
-
-  checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
-    return compareSync(unencryptedPassword, this.password)
-  }
 }

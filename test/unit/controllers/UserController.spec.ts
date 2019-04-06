@@ -18,16 +18,18 @@ describe('UserController', () => {
     const email = 'test@email.com'
     const mockUser = generateUser(email)
     userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
-    mockUser.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => true)
+    userService.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => true)
+
+    const loginInfo = {
+      email, password: mockUser.password
+    }
 
     // When
-    const data = await ctrl.login({
-      email, password: mockUser.password
-    })
+    const data = await ctrl.login(loginInfo)
 
     // Then
     expect(userService.findByEmail).toHaveBeenCalledWith(email)
-    expect(mockUser.checkIfUnencryptedPasswordIsValid).toHaveBeenCalled()
+    expect(userService.checkIfUnencryptedPasswordIsValid).toHaveBeenCalledWith(mockUser.id, loginInfo.password)
     expect(data).toHaveProperty('user')
     expect(data.user).toHaveProperty('email')
     expect(data.user.email).toBe(email)
@@ -39,7 +41,7 @@ describe('UserController', () => {
     const email = 'test@email.com'
     const mockUser = generateUser(email)
     userService.findByEmail = jest.fn().mockImplementation(() => mockUser)
-    mockUser.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => false)
+    userService.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => false)
 
     // When
     await expect(ctrl.login({
@@ -48,15 +50,14 @@ describe('UserController', () => {
 
     // Then
     expect(userService.findByEmail).toHaveBeenCalledWith(email)
-    expect(mockUser.checkIfUnencryptedPasswordIsValid).toHaveBeenCalled()
+    expect(userService.checkIfUnencryptedPasswordIsValid).toHaveBeenCalledWith(mockUser.id, 'invalid password')
   })
 
   test('#login - throw UnprocessableEntityError #2 not found user', async () => {
     // Given
     const email = 'not_found@email.com'
-    const mockUser = generateUser(email)
     userService.findByEmail = jest.fn().mockImplementation(() => null)
-    mockUser.checkIfUnencryptedPasswordIsValid = jest.fn().mockImplementation(() => false)
+    userService.checkIfUnencryptedPasswordIsValid = jest.fn()
 
     // When
     await expect(ctrl.login({
@@ -65,7 +66,7 @@ describe('UserController', () => {
 
     // Then
     expect(userService.findByEmail).toHaveBeenCalledWith(email)
-    expect(mockUser.checkIfUnencryptedPasswordIsValid).not.toHaveBeenCalled()
+    expect(userService.checkIfUnencryptedPasswordIsValid).not.toHaveBeenCalled()
   })
 
   test('#me - return user', async () => {

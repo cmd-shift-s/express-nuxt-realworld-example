@@ -2,6 +2,7 @@ import { Repository, UpdateResult } from 'typeorm'
 import { Service } from 'typedi'
 import { InjectRepository } from 'typeorm-typedi-extensions'
 import { User } from '../entity'
+import { compare, hash } from 'bcryptjs'
 
 export type UserRegistInfo = Pick<User, 'email' | 'username' | 'password'>
 export type UserUpdateInfo = Partial<Pick<User, 'bio' | 'email' | 'password' | 'image' | 'username' | 'roles'>>
@@ -30,13 +31,17 @@ export class UserService {
     })
   }
 
-  save(info: UserRegistInfo): Promise<User> {
+  async save(info: UserRegistInfo): Promise<User> {
+    info.password = await hash(info.password, 8)
     return this.userRepository.save(info)
   }
 
-  update(id: number, info: UserUpdateInfo): Promise<UpdateResult> {
+  async update(id: number, info: UserUpdateInfo): Promise<UpdateResult> {
     // FIXME: Update Result is always the same
     // UpdateResult { generatedMaps: [], raw: [] }
+    if (info.password) {
+      info.password = await hash(info.password, 8)
+    }
     return this.userRepository.update(id, info)
   }
 
@@ -62,6 +67,11 @@ export class UserService {
       .relation('followers')
       .of(id)
       .remove(followerId)
+  }
+
+  async checkIfUnencryptedPasswordIsValid(id: number, password: string) {
+    const user = await this.userRepository.findOne(id, { select: ['password'] })
+    return compare(password, user!.password)
   }
 
 }
