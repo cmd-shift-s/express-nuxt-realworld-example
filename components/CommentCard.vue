@@ -7,7 +7,7 @@
     </div>
     <div class="card-footer">
       <n-link :to="'/profile/' + comment.author.username" class="comment-author">
-        <img :src="comment.author.image" class="comment-author-img">
+        <img :src="comment.author.image || 'https://static.productionready.io/images/smiley-cyrus.jpg'" class="comment-author-img">
       </n-link>
     &nbsp;
       <n-link :to="'/profile/' + comment.author.username" class="comment-author">
