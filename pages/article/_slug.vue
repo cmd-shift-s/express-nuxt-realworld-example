@@ -42,13 +42,13 @@
 
       <div class="row">
         <div class="col-xs-12 col-md-8 offset-md-2">
-          <form v-if="loggedIn" class="card comment-form">
+          <form v-if="loggedIn" class="card comment-form" @submit.prevent="postComment()">
             <div class="card-block">
               <textarea v-model="commentBody" class="form-control" placeholder="Write a comment..." rows="3" />
             </div>
             <div class="card-footer">
               <img :src="user.image" class="comment-author-img">
-              <button class="btn btn-sm btn-primary" @click="postComment(commentBody)">
+              <button class="btn btn-sm btn-primary">
                 Post Comment
               </button>
             </div>
@@ -130,8 +130,8 @@ export default class ArticlePage extends Vue {
     this.comments = comments
   }
 
-  async postComment(body: string) {
-    body = body.trim()
+  async postComment() {
+    const body = this.commentBody
 
     if (body === '') return
 
@@ -140,10 +140,6 @@ export default class ArticlePage extends Vue {
     const { comment } = await this.$axios.$post(`/articles/${this.slug}/comments`, { comment: commentForm })
     this.comments.unshift(comment)
 
-    this.clearInputComment()
-  }
-
-  clearInputComment() {
     this.commentBody = ''
   }
 
