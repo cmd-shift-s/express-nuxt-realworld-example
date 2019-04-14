@@ -25,7 +25,7 @@ describe('UserService', () => {
       fail('cannot connect database')
     }
 
-    user = await generateJoinedUser(conn)
+    user = await generateJoinedUser()
   })
 
   afterEach(() => {
@@ -226,7 +226,7 @@ describe('UserService', () => {
   describe('#follow', () => {
     test('add relation', async () => {
       // Given
-      const follower = await generateJoinedUser(conn)
+      const follower = await generateJoinedUser()
 
       // When
       await service.follow(user.id, follower.id)
@@ -274,7 +274,7 @@ describe('UserService', () => {
   describe('#unfollow', () => {
     test('remove relation', async () => {
       // Given
-      const follower = await generateJoinedUser(conn)
+      const follower = await generateJoinedUser()
       await service.follow(user.id, follower.id)
       expect(await service.isFollowing(user.id, follower.id)).toBeTruthy()
 
@@ -307,7 +307,7 @@ describe('UserService', () => {
   describe('#isFollowing', () => {
     test('returns true', async () => {
       // Given
-      const follower = await generateJoinedUser(conn)
+      const follower = await generateJoinedUser()
       await service.follow(user.id, follower.id)
 
       // When

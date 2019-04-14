@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, ManyToOne } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm'
 import { Article, User } from '.'
+
+export type CommentForm = Pick<Comment, 'body'>
 
 @Entity()
 export class Comment {
@@ -10,17 +12,19 @@ export class Comment {
   @Column()
   body!: string
 
-  @OneToOne(_type => User)
+  @ManyToOne(_type => User, user => user.comments, {
+    onDelete: 'CASCADE'
+  })
   author!: User
 
-  @ManyToOne(_type => Article, article => article.comments)
+  @ManyToOne(_type => Article, article => article.comments, {
+    onDelete: 'CASCADE'
+  })
   article!: Article
 
-  @Column()
   @CreateDateColumn()
   createdAt!: Date
 
-  @Column()
   @UpdateDateColumn()
   updatedAt!: Date
 }

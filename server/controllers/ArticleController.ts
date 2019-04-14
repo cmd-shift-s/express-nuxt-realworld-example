@@ -1,6 +1,6 @@
 import { JsonController, Get, QueryParam, Param, Post, BodyParam, CurrentUser, Delete, NotFoundError, BadRequestError, InternalServerError } from 'routing-controllers'
 import debug from 'debug'
-import { ArticleService, CommentService } from '../services'
+import { ArticleService } from '../services'
 import { ArticleFormData } from '~/models'
 import { User } from '../entity'
 
@@ -9,8 +9,7 @@ export class ArticleController {
   private logger = debug('server:controllers:article')
 
   constructor(
-    private articleService: ArticleService,
-    private commentService: CommentService
+    private articleService: ArticleService
   ) {}
 
   /**
@@ -61,23 +60,6 @@ export class ArticleController {
 
     return {
       article
-    }
-  }
-
-  @Get('/:slug/comments')
-  public async comments(
-    @Param('slug') slug: string
-  ) {
-    this.logger(`comments`, slug)
-
-    if (!await this.articleService.isExistsBySlug(slug)) {
-      throw new NotFoundError(`Not Found Article: ${slug}`)
-    }
-
-    const comments = await this.commentService.list(slug)
-
-    return {
-      comments
     }
   }
 

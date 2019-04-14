@@ -21,7 +21,7 @@ describe('API - profiles', () => {
       fail('cannot connect database')
     }
 
-    user = await generateJoinedUser(conn)
+    user = await generateJoinedUser()
   })
 
   afterEach(() => {
@@ -59,7 +59,7 @@ describe('API - profiles', () => {
 
   test('should returns Profile with following', async () => {
     // Given
-    const follower = await generateJoinedUser(conn)
+    const follower = await generateJoinedUser()
 
     const followerToken = await getAuthentication(req, follower)
 
@@ -81,7 +81,7 @@ describe('API - profiles', () => {
 
   test('should returns Profile(follow & unfollow)', async () => {
     // Given
-    const follower = await generateJoinedUser(conn)
+    const follower = await generateJoinedUser()
 
     const followerToken = await getAuthentication(req, follower)
 

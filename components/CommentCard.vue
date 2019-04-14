@@ -15,23 +15,29 @@
       </n-link>
       <span class="date-posted">{{ comment.createdAt | date('MMM Do') }}</span>
       <span v-if="isOwner" class="mod-options">
-        <i class="ion-edit" />
-        <i class="ion-trash-a" />
+        <!-- <i class="ion-edit" /> -->
+        <i class="ion-trash-a" @click="$emit('remove', comment.id)" />
       </span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
-import { Comment } from '~/models'
+import { Component, Vue, Prop, namespace } from 'nuxt-property-decorator'
+import { Comment, User } from '~/server/entity'
+
+const auth = namespace('auth')
 
 @Component
 export default class CommentCard extends Vue {
   @Prop({ required: true }) comment!: Comment
 
+  @auth.State loggedIn!: boolean
+  @auth.State user!: User
+
   get isOwner() {
-    return Math.round(Math.random())
+    return this.loggedIn &&
+      this.comment.author.id === this.user.id
   }
 }
 </script>

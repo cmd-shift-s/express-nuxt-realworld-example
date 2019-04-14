@@ -44,11 +44,11 @@
         <div class="col-xs-12 col-md-8 offset-md-2">
           <form v-if="loggedIn" class="card comment-form">
             <div class="card-block">
-              <textarea v-model="inputComment" class="form-control" placeholder="Write a comment..." rows="3" />
+              <textarea v-model="commentBody" class="form-control" placeholder="Write a comment..." rows="3" />
             </div>
             <div class="card-footer">
               <img :src="user.image" class="comment-author-img">
-              <button class="btn btn-sm btn-primary" @click="postComment()">
+              <button class="btn btn-sm btn-primary" @click="postComment(commentBody)">
                 Post Comment
               </button>
             </div>
@@ -64,10 +64,15 @@
             </n-link> to add comments on this article.
           </p>
 
+          <div v-if="loadingComments" class="tag-list">
+            Loading comments...
+          </div>
+
           <comment-card
             v-for="comment of comments"
             :key="comment.id"
             :comment="comment"
+            @remove="removeComment($event)"
           />
         </div>
       </div>
@@ -79,21 +84,16 @@
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
 import CommentCard from '~/components/CommentCard.vue'
 import ArticleMeta from '~/components/ArticleMeta.vue'
-import { Comment } from '~/models'
-import { Article, User } from '~/server/entity'
+import { Article, User, CommentForm, Comment } from '~/server/entity'
 
 const auth = namespace('auth')
 
 @Component({
   async asyncData({ app, params }) {
-    const [{ article }, { comments }] = await Promise.all([
-      app.$axios.$get(`/articles/${params.slug}`),
-      app.$axios.$get(`/articles/${params.slug}/comments`)
-    ])
+    const { article } = await app.$axios.$get(`/articles/${params.slug}`)
 
     return {
-      article,
-      comments
+      article
     }
   },
   components: {
@@ -101,10 +101,11 @@ const auth = namespace('auth')
   }
 })
 export default class ArticlePage extends Vue {
-  comments!: Comment[]
+  comments: Comment[] = []
   article!: Article
 
-  inputComment: string = ''
+  commentBody: string = ''
+  loadingComments: boolean = false
 
   @auth.State loggedIn!: boolean
   @auth.State user!: User
@@ -116,6 +117,40 @@ export default class ArticlePage extends Vue {
 
   get slug() {
     return this.$route.params.slug
+  }
+
+  beforeMount() {
+    this.loadComments()
+  }
+
+  async loadComments() {
+    this.loadingComments = true
+    const { comments } = await this.$axios.$get(`/articles/${this.slug}/comments`)
+    this.loadingComments = false
+    this.comments = comments
+  }
+
+  async postComment(body: string) {
+    body = body.trim()
+
+    if (body === '') return
+
+    const commentForm: CommentForm = { body }
+
+    const { comment } = await this.$axios.$post(`/articles/${this.slug}/comments`, { comment: commentForm })
+    this.comments.unshift(comment)
+
+    this.clearInputComment()
+  }
+
+  clearInputComment() {
+    this.commentBody = ''
+  }
+
+  async removeComment(id: number) {
+    await this.$axios.$delete(`/articles/${this.slug}/comments/${id}`)
+    const idx = this.comments.findIndex(v => v.id === id)
+    this.comments.splice(idx, 1)
   }
 
   async removeArticle() {

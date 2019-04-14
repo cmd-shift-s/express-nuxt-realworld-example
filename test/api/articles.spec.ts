@@ -23,7 +23,7 @@ describe('API - articles', () => {
       fail('cannot connect database')
     }
 
-    user = await generateJoinedUser(conn)
+    user = await generateJoinedUser()
   })
 
   afterEach(() => {
@@ -63,15 +63,7 @@ describe('API - articles', () => {
     expect(res.body).toHaveProperty('articleCount')
     expect(res.body.articles).toBeInstanceOf(Array)
     expect(res.body.articles).toHaveLength(limit)
-    expect(res.body.articleCount).toBe(limit)
-  })
-
-  test('post articles - throws NotFound', async () => {
-    // When
-    return req.get(`/api/articles/${faker.lorem.slug()}/comments`)
-
-    // Then
-    .expect(404)
+    expect(res.body.articleCount).toBeGreaterThanOrEqual(limit)
   })
 
   test('get articles/_slug/comments - returns Comments', async () => {

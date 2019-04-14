@@ -36,11 +36,9 @@ export class Article {
   favorited: boolean = false
   favoritesCount: number = 0
 
-  @Column()
   @CreateDateColumn()
   createdAt!: Date
 
-  @Column()
   @UpdateDateColumn()
   updatedAt!: Date
 }

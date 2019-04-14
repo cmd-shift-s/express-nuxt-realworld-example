@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm'
-import { hashSync, compareSync } from 'bcryptjs'
-import { Article } from '.'
+import { Article, Comment } from '.'
 
 @Entity()
 export class User {
@@ -23,11 +22,9 @@ export class User {
   @Column({ select: false })
   password!: string
 
-  @Column()
   @CreateDateColumn()
   createdAt!: Date
 
-  @Column()
   @UpdateDateColumn()
   updatedAt!: Date
 
@@ -61,4 +58,10 @@ export class User {
    * 좋아요한 articles
    */
   favoritedArticles?: Article[]
+
+  @OneToMany(_type => Comment, comment => comment.author)
+  /**
+   * 작성한 comments
+   */
+  comments?: Comment[]
 }

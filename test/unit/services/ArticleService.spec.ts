@@ -1,16 +1,17 @@
 import { createConnection, Connection, Repository } from 'typeorm'
 import { ArticleService } from '~/server/services'
-import { generateJoinedUser } from '../../utils'
+import { generateJoinedUser, persists } from '../../utils'
 import { User, Article } from '~/server/entity'
 import faker from 'faker'
 import { ArticleFormData } from '~/models'
+import * as fixture from '../fixtures'
 
 describe('ArticleService', () => {
   let conn: Connection
   let repository: Repository<Article>
   let service: ArticleService
   let user: User
-  let _article: Article
+  let mockArticle: Article
 
   beforeAll(async () => {
     conn = await createConnection()
@@ -27,21 +28,14 @@ describe('ArticleService', () => {
       fail('cannot connect database')
     }
 
-    user = await generateJoinedUser(conn) as User
-    _article = await repository.save({
-      slug: faker.lorem.slug(),
-      title: faker.lorem.sentence(),
-      description: faker.lorem.sentence(),
-      body: faker.lorem.paragraph(),
-      tagList: Array.from({ length: 3 }, () => faker.lorem.word()),
-      author: user
-    })
+    user = await generateJoinedUser() as User
+    mockArticle = await persists(Article, fixture.generateArticle({ author: user }))
   })
 
   afterEach(async () => {
     if (conn && conn.isConnected) {
-      if (_article) {
-        await repository.remove(_article)
+      if (mockArticle) {
+        await repository.remove(mockArticle)
       }
       await conn.getRepository(User).remove(user)
     }
@@ -93,12 +87,12 @@ describe('ArticleService', () => {
       // Then
       expect(articles.length).toBeGreaterThanOrEqual(1)
 
-      const article = articles.find(it => it.id === _article.id) as Article
+      const article = articles.find(it => it.id === mockArticle.id) as Article
       expect(article).not.toBeUndefined()
-      expect(article.title).toEqual(_article.title)
-      expect(article.description).toEqual(_article.description)
-      expect(article.body).toEqual(_article.body)
-      expect(article.tagList).toEqual(expect.arrayContaining(_article.tagList))
+      expect(article.title).toEqual(mockArticle.title)
+      expect(article.description).toEqual(mockArticle.description)
+      expect(article.body).toEqual(mockArticle.body)
+      expect(article.tagList).toEqual(expect.arrayContaining(mockArticle.tagList))
       expect(article).toHaveProperty('author')
       expect(article.author).not.toHaveProperty('password')
     })
@@ -132,7 +126,7 @@ describe('ArticleService', () => {
       await service.remove(article)
 
       // When
-      await expect(service.remove(_article))
+      await expect(service.remove(mockArticle))
 
       // Then
       .rejects.toThrowError()
@@ -150,15 +144,15 @@ describe('ArticleService', () => {
 
     test('returns Article', async () => {
       // When
-      const article = await service.findById(_article.id) as Article
+      const article = await service.findById(mockArticle.id) as Article
 
       // Then
       expect(article).not.toBeUndefined()
-      expect(article.slug).toEqual(_article.slug)
-      expect(article.body).toEqual(_article.body)
-      expect(article.description).toEqual(_article.description)
-      expect(article.title).toEqual(_article.title)
-      expect(article.tagList).toEqual(expect.arrayContaining(_article.tagList))
+      expect(article.slug).toEqual(mockArticle.slug)
+      expect(article.body).toEqual(mockArticle.body)
+      expect(article.description).toEqual(mockArticle.description)
+      expect(article.title).toEqual(mockArticle.title)
+      expect(article.tagList).toEqual(expect.arrayContaining(mockArticle.tagList))
       expect(article).not.toHaveProperty('author')
       // expect(article.author).not.toHaveProperty('password')
     })
@@ -175,17 +169,17 @@ describe('ArticleService', () => {
 
     test('returns Article', async () => {
       // When
-      const article = await service.findBySlug(_article.slug)
+      const article = await service.findBySlug(mockArticle.slug)
 
       // Then
       expect(article).not.toBeUndefined()
-      expect(article!.id).toEqual(_article.id)
-      expect(article!.body).toEqual(_article.body)
-      expect(article!.description).toEqual(_article.description)
-      expect(article!.tagList).toEqual(expect.arrayContaining(_article.tagList))
-      expect(article!.slug).toEqual(_article.slug)
-      expect(article!.createdAt).toEqual(_article.createdAt)
-      expect(article!.updatedAt).toEqual(_article.updatedAt)
+      expect(article!.id).toEqual(mockArticle.id)
+      expect(article!.body).toEqual(mockArticle.body)
+      expect(article!.description).toEqual(mockArticle.description)
+      expect(article!.tagList).toEqual(expect.arrayContaining(mockArticle.tagList))
+      expect(article!.slug).toEqual(mockArticle.slug)
+      expect(article!.createdAt).toEqual(mockArticle.createdAt)
+      expect(article!.updatedAt).toEqual(mockArticle.updatedAt)
       expect(article!.author).not.toHaveProperty('password')
     })
   })

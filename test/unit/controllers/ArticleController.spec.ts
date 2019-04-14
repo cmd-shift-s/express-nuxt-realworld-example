@@ -8,12 +8,10 @@ describe('ArticleController', () => {
 
   let ctrl: ArticleController
   let articleService: ArticleService
-  let commentservice: CommentService
 
   beforeEach(() => {
     articleService = new ArticleService({} as any)
-    commentservice = new CommentService()
-    ctrl = new ArticleController(articleService, commentservice)
+    ctrl = new ArticleController(articleService)
   })
 
   test('#articles - returns artiles and articleCount', async () => {
@@ -33,27 +31,27 @@ describe('ArticleController', () => {
     expect(data.articleCount).not.toBeNaN()
   })
 
-  test('#comments - returns comments', async () => {
-    // Given
-    const slug = 'article-slug'
-    const mockComments = Array.from({ length: 2 }, () => commentservice.generateComment(slug))
-    articleService.isExistsBySlug = jest.fn().mockImplementation(() => true)
-    commentservice.list = jest.fn().mockImplementation(() => mockComments)
+  // test('#comments - returns comments', async () => {
+  //   // Given
+  //   const slug = 'article-slug'
+  //   const mockComments = Array.from({ length: 2 }, () => commentservice.generateComment(slug))
+  //   articleService.isExistsBySlug = jest.fn().mockImplementation(() => true)
+  //   commentservice.list = jest.fn().mockImplementation(() => mockComments)
 
-    // When
-    const data = await ctrl.comments(slug)
+  //   // When
+  //   const data = await ctrl.comments(slug)
 
-    // Then
-    expect(articleService.isExistsBySlug).toHaveBeenCalledWith(slug)
-    expect(commentservice.list).toHaveBeenCalledWith(slug)
-    expect(data).toHaveProperty('comments')
-    expect(data.comments).toBe(mockComments)
-  })
+  //   // Then
+  //   expect(articleService.isExistsBySlug).toHaveBeenCalledWith(slug)
+  //   expect(commentservice.list).toHaveBeenCalledWith(slug)
+  //   expect(data).toHaveProperty('comments')
+  //   expect(data.comments).toBe(mockComments)
+  // })
 
   test('#read - returns Article', async () => {
     // Given
     const slug = 'article-slug'
-    const mockArticle = generateArticle(slug)
+    const mockArticle = generateArticle({ slug })
     articleService.findBySlug = jest.fn().mockImplementation(() => mockArticle)
 
     // When

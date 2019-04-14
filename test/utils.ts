@@ -1,7 +1,7 @@
 import { SuperTest, Test } from 'supertest'
 import { UserLoginInfo } from '~/server/controllers'
 import { User } from '~/server/entity'
-import { Connection } from 'typeorm'
+import { getConnection } from 'typeorm'
 import faker from 'faker'
 import { hash } from 'bcryptjs'
 
@@ -16,12 +16,16 @@ export async function getAuthentication(req: SuperTest<Test>, user: UserLoginInf
   return res.body.user.token
 }
 
+export function persists<T>(entity: (new () => {}), data: T): Promise<T> {
+  const conn = getConnection()
+  return conn.getRepository(entity).save(data)
+}
+
 export type JoinedUser = Pick<User, 'id' | 'password' | 'email' | 'username'>
 
-export async function generateJoinedUser(conn: Connection): Promise<JoinedUser> {
-  if (!conn || !conn.isConnected) {
-    fail('cannot connect database')
-  }
+export async function generateJoinedUser(): Promise<JoinedUser> {
+
+  const conn = getConnection()
 
   const password = faker.internet.password()
 

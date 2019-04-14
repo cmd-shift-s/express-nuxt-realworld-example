@@ -23,7 +23,7 @@ describe('API - users', () => {
       fail('cannot connect database')
     }
 
-    user = await generateJoinedUser(conn)
+    user = await generateJoinedUser()
   })
 
   afterEach(() => {
