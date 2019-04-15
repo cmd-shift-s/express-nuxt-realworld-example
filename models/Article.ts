@@ -14,3 +14,10 @@ export interface Article {
 }
 
 export type ArticleFormData = Pick<Article, 'title' | 'description' | 'body' | 'tagList'>
+export type ArticleSearchParams = {
+  tag?: string,
+  author?: string,
+  favorited?: string,
+  limit?: number,
+  offset?: number
+}

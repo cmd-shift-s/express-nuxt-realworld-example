@@ -1,4 +1,4 @@
-import { ArticleFormData } from '~/models'
+import { ArticleFormData, ArticleSearchParams } from '~/models'
 import { User, Article } from '../entity'
 import { InjectRepository } from 'typeorm-typedi-extensions'
 import { Repository } from 'typeorm'
@@ -10,10 +10,16 @@ export class ArticleService {
     private articleRepository: Repository<Article>
   ) {}
 
-  list(limit: number, user?: User): Promise<Article[]> {
+  list(params: ArticleSearchParams, user?: User): Promise<[Article[], number]> {
     const q = this.articleRepository.createQueryBuilder('article')
       .loadRelationCountAndMap('article.favoritesCount', 'article.favoritedUsers', 'favoritedUsers')
       .leftJoinAndSelect('article.author', 'author')
+
+    if (params.tag) {
+      q.where('article.tagList in (:...tagList)', { tagList: [params.tag] })
+    } else if (params.author) {
+      q.where('author.username = :username', { username: params.author })
+    }
 
     if (user) {
       q.loadRelationCountAndMap('article.favorited', 'article.favoritedUsers', 'favorited', qb => {
@@ -21,7 +27,11 @@ export class ArticleService {
       })
     }
 
-    return q.limit(limit).getMany()
+    return q
+      .limit(params.limit)
+      .offset(params.offset)
+      .orderBy('article.createdAt', 'DESC')
+      .getManyAndCount()
   }
 
   count(): Promise<number> {

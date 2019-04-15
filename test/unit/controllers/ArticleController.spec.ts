@@ -1,7 +1,7 @@
 import { ArticleController } from '~/server/controllers'
 import { ArticleService, CommentService } from '~/server/services'
 import { generateUser, generateArticle } from '../fixtures'
-import { ArticleFormData } from '~/models'
+import { ArticleFormData, ArticleSearchParams } from '~/models'
 import faker from 'faker'
 
 describe('ArticleController', () => {
@@ -17,16 +17,16 @@ describe('ArticleController', () => {
   test('#articles - returns artiles and articleCount', async () => {
     // Given
     const mockArticles = Array.from({ length: 2 }, () => generateArticle())
-    articleService.list = jest.fn().mockImplementation(() => mockArticles)
-    articleService.count = jest.fn().mockImplementation(() => mockArticles.length)
-    const defaultLimit = 20
+    articleService.list = jest.fn().mockImplementation(() => [mockArticles, mockArticles.length])
+    const defaultParams: ArticleSearchParams = {
+      limit: 20, offset: 0
+    }
 
     // When
-    const data = await ctrl.articles()
+    const data = await ctrl.articles(defaultParams)
 
     // Then
-    expect(articleService.list).toHaveBeenCalledWith(defaultLimit, undefined)
-    expect(articleService.count).toHaveBeenCalledWith()
+    expect(articleService.list).toHaveBeenCalledWith(defaultParams, undefined)
     expect(data.articles).toBe(mockArticles)
     expect(data.articleCount).not.toBeNaN()
   })

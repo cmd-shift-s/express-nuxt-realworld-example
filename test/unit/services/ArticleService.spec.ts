@@ -82,7 +82,7 @@ describe('ArticleService', () => {
   describe('#list', () => {
     test('returns Article[]', async () => {
       // When
-      const articles = await service.list(10, user)
+      const [articles] = await service.list({ limit: 10, offset: 0 }, user)
 
       // Then
       expect(articles.length).toBeGreaterThanOrEqual(1)

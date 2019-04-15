@@ -18,7 +18,7 @@
         <p>{{ article.description }}</p>
         <span>Read more...</span>
         <ul v-if="article.tagList" class="tag-list">
-          <li v-for="(tag, i) of article.tagList" :key="i" class="tag-default tag-pill tag-outline">
+          <li v-for="(tag, i) of article.tagList" :key="i" class="tag-default tag-pill tag-outline" @click.prevent="searchTag(tag)">
             {{ tag }}
           </li>
         </ul>
@@ -44,6 +44,10 @@ export default class ArticlePreview extends Vue {
     return [
       this.article.favorited ? 'btn-primary' : 'btn-outline-primary'
     ]
+  }
+
+  searchTag(tag: string) {
+    this.$router.push({ query: { tag } })
   }
 
   toggleFavorite() {

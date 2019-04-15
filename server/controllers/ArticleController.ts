@@ -1,7 +1,7 @@
-import { JsonController, Get, QueryParam, Param, Post, BodyParam, CurrentUser, Delete, NotFoundError, BadRequestError, InternalServerError } from 'routing-controllers'
+import { JsonController, Get, QueryParam, Param, Post, BodyParam, CurrentUser, Delete, NotFoundError, BadRequestError, InternalServerError, QueryParams } from 'routing-controllers'
 import debug from 'debug'
 import { ArticleService } from '../services'
-import { ArticleFormData } from '~/models'
+import { ArticleFormData, ArticleSearchParams } from '~/models'
 import { User } from '../entity'
 
 @JsonController('/articles')
@@ -17,13 +17,17 @@ export class ArticleController {
    */
   @Get()
   public async articles(
-    @QueryParam('limit') limit: number = 20,
+    @QueryParams() params: ArticleSearchParams,
     @CurrentUser() curUser?: User
   ) {
-    this.logger(`articles`)
+    this.logger(`articles`, params)
 
-    const articles = await this.articleService.list(limit, curUser)
-    const articleCount = await this.articleService.count()
+    params = Object.assign({
+      limit: 20, offset: 0
+    } as ArticleSearchParams, params)
+
+    const [articles, articleCount] = await this.articleService.list(params, curUser)
+    // const articleCount = await this.articleService.count()
 
     return {
       articles,

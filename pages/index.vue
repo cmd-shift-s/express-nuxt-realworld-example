@@ -15,10 +15,19 @@
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a v-if="loggedIn" class="nav-link disabled" href="">Your Feed</a>
+                <n-link v-if="loggedIn" :to="`/?author=${user.username}`" class="nav-link" :class="{'active': hasQueryAuthor}">
+                  Your Feed
+                </n-link>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="">Global Feed</a>
+                <n-link to="/" class="nav-link" exact>
+                  Global Feed
+                </n-link>
+              </li>
+              <li v-show="hasQueryTag" class="nav-item">
+                <n-link :to="`/?tag=${queryTag}`" class="nav-link" :class="{'active': hasQueryTag}">
+                  #{{ queryTag }}
+                </n-link>
               </li>
             </ul>
           </div>
@@ -49,9 +58,9 @@
             </div>
 
             <div class="tag-list">
-              <n-link v-for="(tag, i) of tags" :key="i" to="" class="tag-pill tag-default">
+              <a v-for="(tag, i) of tags" :key="i" href="" class="tag-pill tag-default" @click.prevent="$router.push({query: {tag}})">
                 {{ tag }}
-              </n-link>
+              </a>
             </div>
           </div>
         </div>
@@ -61,9 +70,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ArticlePreview from '~/components/ArticlePreview.vue'
-import { Article } from '~/server/entity'
+import { Article, User } from '~/server/entity'
+import { ArticleSearchParams } from '../models'
 
 const auth = namespace('auth')
 
@@ -74,6 +84,7 @@ const auth = namespace('auth')
 })
 export default class IndexPage extends Vue {
   @auth.State loggedIn!: boolean
+  @auth.State user!: User
 
   tags: string[] = []
   articles: Article[] = []
@@ -87,9 +98,24 @@ export default class IndexPage extends Vue {
     this.loadTags()
   }
 
+  get queryAuthor() {
+    return this.$route.query.author
+  }
+  get hasQueryAuthor() {
+    return !!this.queryAuthor
+  }
+
+  get queryTag() {
+    return this.$route.query.tag
+  }
+  get hasQueryTag() {
+    return !!this.queryTag
+  }
+
+  @Watch('$route')
   async loadArticles() {
     this.loadingArticle = true
-    const { articles, articleCount } = await this.$axios.$get('articles', { params: { limit: 10 } })
+    const { articles, articleCount } = await this.$axios.$get('articles', { params: this.$route.query })
     this.loadingArticle = false
     this.articles = articles
     this.articleCount = articleCount
