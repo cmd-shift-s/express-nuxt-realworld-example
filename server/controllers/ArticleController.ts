@@ -27,7 +27,6 @@ export class ArticleController {
     } as ArticleSearchParams, params)
 
     const [articles, articleCount] = await this.articleService.list(params, curUser)
-    // const articleCount = await this.articleService.count()
 
     return {
       articles,

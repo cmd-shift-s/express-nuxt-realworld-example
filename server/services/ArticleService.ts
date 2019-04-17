@@ -3,6 +3,8 @@ import { User, Article } from '../entity'
 import { InjectRepository } from 'typeorm-typedi-extensions'
 import { Repository } from 'typeorm'
 import slugify from 'slugify'
+import { Inject } from 'typedi'
+import { UserService } from './UserService'
 
 export class ArticleService {
   constructor(
@@ -10,15 +12,19 @@ export class ArticleService {
     private articleRepository: Repository<Article>
   ) {}
 
-  list(params: ArticleSearchParams, user?: User): Promise<[Article[], number]> {
+  async list(params: ArticleSearchParams, user?: User): Promise<[Article[], number]> {
     const q = this.articleRepository.createQueryBuilder('article')
       .loadRelationCountAndMap('article.favoritesCount', 'article.favoritedUsers', 'favoritedUsers')
       .leftJoinAndSelect('article.author', 'author')
 
     if (params.tag) {
-      q.where('article.tagList in (:...tagList)', { tagList: [params.tag] })
-    } else if (params.author) {
-      q.where('author.username = :username', { username: params.author })
+      q.andWhere('article.tagList in (:...tagList)', { tagList: [params.tag] })
+    }
+    if (params.author) {
+      q.andWhere('author.username = :author', { author: params.author })
+    }
+    if (params.favorited) {
+      q.andWhere(`article.id in (select fa."articleId" from "public"."user" u, user_favorited_articles_article fa where u."username" = :favorited and fa."userId" = u."id")`, { favorited: params.favorited })
     }
 
     if (user) {
@@ -32,10 +38,6 @@ export class ArticleService {
       .offset(params.offset)
       .orderBy('article.createdAt', 'DESC')
       .getManyAndCount()
-  }
-
-  count(): Promise<number> {
-    return this.articleRepository.count()
   }
 
   findById(id: number): Promise<Article | undefined> {
