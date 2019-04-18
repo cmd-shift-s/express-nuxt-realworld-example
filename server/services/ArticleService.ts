@@ -5,6 +5,7 @@ import { Repository } from 'typeorm'
 import slugify from 'slugify'
 import { Inject } from 'typedi'
 import { UserService } from './UserService'
+import crypto from 'crypto'
 
 export class ArticleService {
   constructor(
@@ -69,7 +70,7 @@ export class ArticleService {
   }
 
   save(articleForm: ArticleFormData, author: User): Promise<Article> {
-    const slug = slugify(articleForm.title)
+    const slug = `${slugify(articleForm.title)}-${crypto.randomBytes(6).toString('base64')}`
 
     return this.articleRepository.save({ slug, ...articleForm, author })
   }
