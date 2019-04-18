@@ -47,6 +47,12 @@
             @favorite="favorite($event)"
             @unfavorite="unfavorite($event)"
           />
+
+          <pagination
+            :current-page="currentPage"
+            :total="articleCount"
+            @change="changePage($event)"
+          />
         </div>
 
         <div class="col-md-3">
@@ -72,14 +78,15 @@
 <script lang="ts">
 import { Component, Vue, namespace, Watch } from 'nuxt-property-decorator'
 import ArticlePreview from '~/components/ArticlePreview.vue'
+import Pagination from '~/components/Pagination.vue'
 import { Article, User } from '~/server/entity'
-import { ArticleSearchParams } from '../models'
 
 const auth = namespace('auth')
 
 @Component({
   components: {
-    ArticlePreview
+    ArticlePreview,
+    Pagination
   }
 })
 export default class IndexPage extends Vue {
@@ -112,6 +119,10 @@ export default class IndexPage extends Vue {
     return !!this.queryTag
   }
 
+  get currentPage() {
+    return (Number.parseInt(this.$route.query.offset as string, 10) || 0) + 1
+  }
+
   @Watch('$route')
   async loadArticles() {
     this.loadingArticle = true
@@ -119,6 +130,14 @@ export default class IndexPage extends Vue {
     this.loadingArticle = false
     this.articles = articles
     this.articleCount = articleCount
+  }
+
+  changePage(offset: number) {
+    this.$router.push({
+      query: {
+        offset: String(offset - 1)
+      }
+    })
   }
 
   async loadTags() {
