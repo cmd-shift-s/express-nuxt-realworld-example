@@ -17,7 +17,7 @@
         Edit Article
       </n-link>
       &nbsp;&nbsp;
-      <button class="btn btn-sm btn-outline-danger" @click="removeArticle()">
+      <button class="btn btn-sm btn-outline-danger" @click="$emit('remove')">
         <i class="ion-trash-a" />
         &nbsp;
         Delete Article

@@ -10,6 +10,7 @@
           @unfollow="unfollow()"
           @favorite="favorite()"
           @unfavorite="unfavorite()"
+          @remove="removeArticle()"
         />
       </div>
     </div>
@@ -37,6 +38,7 @@
           @unfollow="unfollow()"
           @favorite="favorite()"
           @unfavorite="unfavorite()"
+          @remove="removeArticle()"
         />
       </div>
 
