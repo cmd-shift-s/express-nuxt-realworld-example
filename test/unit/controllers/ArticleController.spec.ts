@@ -19,7 +19,7 @@ describe('ArticleController', () => {
     const mockArticles = Array.from({ length: 2 }, () => generateArticle())
     articleService.list = jest.fn().mockImplementation(() => [mockArticles, mockArticles.length])
     const defaultParams: ArticleSearchParams = {
-      limit: 20, offset: 0
+      limit: '20', offset: '0'
     }
 
     // When

@@ -22,10 +22,6 @@ export class ArticleController {
   ) {
     this.logger(`articles`, params)
 
-    params = Object.assign({
-      limit: 20, offset: 0
-    } as ArticleSearchParams, params)
-
     const [articles, articleCount] = await this.articleService.list(params, curUser)
 
     return {

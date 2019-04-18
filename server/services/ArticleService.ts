@@ -13,18 +13,23 @@ export class ArticleService {
   ) {}
 
   async list(params: ArticleSearchParams, user?: User): Promise<[Article[], number]> {
+    const { tag, author, favorited } = params
+
+    const limit = Number.parseInt(params.limit || '10', 10) || 10
+    const offset = (Number.parseInt(params.offset || '0', 10) || 0) * limit
+
     const q = this.articleRepository.createQueryBuilder('article')
       .loadRelationCountAndMap('article.favoritesCount', 'article.favoritedUsers', 'favoritedUsers')
       .leftJoinAndSelect('article.author', 'author')
 
-    if (params.tag) {
-      q.andWhere('article.tagList in (:...tagList)', { tagList: [params.tag] })
+    if (tag) {
+      q.andWhere('article.tagList in (:...tagList)', { tagList: [tag] })
     }
-    if (params.author) {
-      q.andWhere('author.username = :author', { author: params.author })
+    if (author) {
+      q.andWhere('author.username = :author', { author })
     }
-    if (params.favorited) {
-      q.andWhere(`article.id in (select fa."articleId" from "public"."user" u, user_favorited_articles_article fa where u."username" = :favorited and fa."userId" = u."id")`, { favorited: params.favorited })
+    if (favorited) {
+      q.andWhere(`article.id in (select fa."articleId" from "public"."user" u, user_favorited_articles_article fa where u."username" = :favorited and fa."userId" = u."id")`, { favorited })
     }
 
     if (user) {
@@ -34,8 +39,8 @@ export class ArticleService {
     }
 
     return q
-      .limit(params.limit)
-      .offset(params.offset)
+      .limit(limit)
+      .offset(offset)
       .orderBy('article.createdAt', 'DESC')
       .getManyAndCount()
   }
