@@ -20,7 +20,12 @@
                 </n-link>
               </li>
               <li class="nav-item">
-                <n-link to="/" class="nav-link" exact>
+                <n-link
+                  to="/"
+                  class="nav-link"
+                  :class="{'active': !hasQueryAuthor && !hasQueryTag}"
+                  exact
+                >
                   Global Feed
                 </n-link>
               </li>
