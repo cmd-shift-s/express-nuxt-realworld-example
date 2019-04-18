@@ -18,11 +18,11 @@
       <div class="row article-content">
         <div class="col-md-12">
           <div>
-            <p>{{ article.body }}</p>
+            <p v-html="compiledMarkdown" />
           </div>
           <ul v-if="article.tagList" class="tag-list">
             <li v-for="(tag, i) of article.tagList" :key="i" class="tag-default tag-pill tag-outline">
-              {{ tag }}
+              <a href="" @click.prevent="searchArticleByTag(tag)">{{ tag }}</a>
             </li>
           </ul>
         </div>
@@ -82,6 +82,7 @@
 
 <script lang="ts">
 import { Component, Vue, namespace } from 'nuxt-property-decorator'
+import marked from 'marked'
 import CommentCard from '~/components/CommentCard.vue'
 import ArticleMeta from '~/components/ArticleMeta.vue'
 import { Article, User, CommentForm, Comment } from '~/server/entity'
@@ -121,6 +122,17 @@ export default class ArticlePage extends Vue {
 
   beforeMount() {
     this.loadComments()
+  }
+
+  get compiledMarkdown() {
+    return marked(this.article.body, { sanitize: true })
+  }
+
+  searchArticleByTag(tag: string) {
+    this.$router.push({
+      path: '/',
+      query: { tag }
+    })
   }
 
   async loadComments() {
