@@ -37,14 +37,6 @@
             </ul>
           </div>
 
-          <div v-if="loadingArticle">
-            Loading articles...
-          </div>
-
-          <div v-else-if="articleCount === 0">
-            No articles are here... yet.
-          </div>
-
           <article-preview
             v-for="(article, i) of articles"
             :key="i"
@@ -52,6 +44,14 @@
             @favorite="favorite($event)"
             @unfavorite="unfavorite($event)"
           />
+
+          <div v-if="loadingArticle">
+            Loading articles...
+          </div>
+
+          <div v-else-if="articleCount === 0">
+            No articles are here... yet.
+          </div>
 
           <pagination
             :current-page="currentPage"
