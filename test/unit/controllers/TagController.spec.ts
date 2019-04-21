@@ -7,7 +7,7 @@ describe('TagController', () => {
   let tagService: TagService
 
   beforeEach(() => {
-    tagService = new TagService()
+    tagService = new TagService({} as any)
     ctrl = new TagController(tagService)
   })
 
