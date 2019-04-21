@@ -24,7 +24,7 @@ export class ArticleService {
       .leftJoinAndSelect('article.author', 'author')
 
     if (tag) {
-      q.andWhere('article.tagList in (:...tagList)', { tagList: [tag] })
+      q.andWhere('article.tagList like \'%\'||:tag||\'%\'', { tag })
     }
     if (author) {
       q.andWhere('author.username = :author', { author })
